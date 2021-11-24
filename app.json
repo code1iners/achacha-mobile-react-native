@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Achacha",
+    "slug": "Achacha",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Achacha"
+}
