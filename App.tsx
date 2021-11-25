@@ -7,9 +7,18 @@ import { loadFonts } from "./src/utils/assetUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TOKEN } from "./src/utils/constants";
 import states from "./src/apollo/states";
+import { ThemeProvider } from "styled-components";
+import { useColorScheme } from "react-native";
+import { darkTheme, lightTheme } from "./src/utils/themes/colors";
+import { round } from "./src/utils/themes/spacing";
 
 export default function App() {
   const [ready, setReady] = useState(false);
+  const isDark = useColorScheme() === "dark";
+  const theme = {
+    colors: isDark ? darkTheme : lightTheme,
+    round: round,
+  };
 
   // Methods.
   // App loading start.
@@ -59,7 +68,9 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <RootNavigator />
+      <ThemeProvider theme={theme}>
+        <RootNavigator />
+      </ThemeProvider>
     </NavigationContainer>
   );
 }
