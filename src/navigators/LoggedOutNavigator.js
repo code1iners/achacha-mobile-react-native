@@ -6,7 +6,11 @@ const Nav = createNativeStackNavigator();
 
 const LoggedOutNavigator = () => {
   return (
-    <Nav.Navigator>
+    <Nav.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Nav.Screen name="WelcomeScreen" component={WelcomeScreen} />
     </Nav.Navigator>
   );
