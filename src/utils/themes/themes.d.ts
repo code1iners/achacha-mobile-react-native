@@ -13,9 +13,19 @@ declare module "styled-components" {
     };
 
     round: {
-      L: string;
-      M: string;
-      S: string;
+      xs: string;
+      s: string;
+      m: string;
+      l: string;
+      xl: string;
+    };
+
+    spacing: {
+      xs: string;
+      s: string;
+      m: string;
+      l: string;
+      xl: string;
     };
   }
 }

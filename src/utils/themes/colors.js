@@ -6,7 +6,7 @@ export const colors = {
 
 export const lightTheme = {
   mainBackgroundColor: "#ffffff",
-  textColor: "#E9E4B4",
+  textColor: "#1e272e",
   primary: "#02343F",
   secondary: "#F0EDCC",
   ...colors,

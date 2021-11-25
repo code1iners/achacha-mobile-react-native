@@ -11,7 +11,6 @@ const Nav = createNativeStackNavigator();
 const RootNavigator = () => {
   const token = states.tokenVar();
   const themeContext = useContext(ThemeContext);
-  console.log(themeContext);
   const { mainBackgroundColor } = themeContext;
   const isDark = getIsDark();
 

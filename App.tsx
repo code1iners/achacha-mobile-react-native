@@ -10,14 +10,15 @@ import states from "./src/apollo/states";
 import { ThemeProvider } from "styled-components";
 import { useColorScheme } from "react-native";
 import { darkTheme, lightTheme } from "./src/utils/themes/colors";
-import { round } from "./src/utils/themes/spacing";
+import { round, spacing } from "./src/utils/themes/spacing";
 
 export default function App() {
   const [ready, setReady] = useState(false);
   const isDark = useColorScheme() === "dark";
   const theme = {
     colors: isDark ? darkTheme : lightTheme,
-    round: round,
+    round,
+    spacing,
   };
 
   // Methods.

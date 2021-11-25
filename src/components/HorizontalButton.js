@@ -5,12 +5,14 @@ import { ThemeText } from "../utils/styles/styleUtils";
 const Container = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
-  padding: 5px;
+  padding: ${(props) => props.theme.spacing.m};
   border: 1px solid ${(props) => props.theme.colors.primary};
 `;
 const ButtonText = styled(ThemeText)`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 const HorizontalButton = ({ text = "button" }) => {

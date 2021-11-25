@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../utils/styles/styleUtils";
 
 const InputContainer = styled.View`
-  margin-bottom: ${(props) => (props.hasBelowMargin ? "20px" : 0)};
+  margin-bottom: ${(props) => (props.hasMarginBottom ? "20px" : 0)};
 `;
 const LabelText = styled(ThemeText)`
   margin-bottom: 5px;
@@ -14,18 +14,22 @@ const LabelText = styled(ThemeText)`
 
 const InputWrapper = styled(FlexView)`
   align-items: center;
+  border: 1px solid ${(props) => props.theme.colors.textColor};
+  background-color: ${(props) => props.theme.colors.mainBackgroundColor};
 `;
-const Input = styled.TextInput`
+const Input = styled.TextInput.attrs({
+  placeholderTextColor: "grey",
+})`
   width: 100%;
-  background-color: white;
-  border-radius: 5px;
+  border-radius: ${(props) => props.theme.round.s};
   padding: 5px 10px;
   letter-spacing: 1.5px;
+  color: ${(props) => props.theme.colors.textColor};
 `;
 
-const InputWithLabel = ({ label = "Label", placeholder, hasBelowMargin }) => {
+const InputWithLabel = ({ label = "Label", placeholder, hasMarginBottom }) => {
   return (
-    <InputContainer hasBelowMargin={hasBelowMargin}>
+    <InputContainer hasMarginBottom={hasMarginBottom}>
       <LabelText>{label}</LabelText>
       <InputWrapper>
         <Input placeholder={placeholder} />
