@@ -1,3 +1,5 @@
+import { userSignOut } from "../../hooks/useAuth";
+
 /**
  * ### Setting screen menus.
  */
@@ -8,7 +10,15 @@ export const settingMenus = [
     contents: [
       {
         title: "Me",
+        type: "component",
         componentName: "ProfileScreen",
+      },
+      {
+        title: "Sign out",
+        type: "function",
+        function: async () => {
+          userSignOut();
+        },
       },
     ],
   },

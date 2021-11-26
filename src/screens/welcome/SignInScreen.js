@@ -12,6 +12,7 @@ import {
   TOKEN,
 } from "../../utils/constants";
 import states from "../../apollo/states";
+import { userSignIn } from "../../hooks/useAuth";
 
 const SIGN_IN_MUTATION = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -57,10 +58,8 @@ const SignInScreen = ({ params }) => {
         });
 
         if (ok) {
-          // Token persist.
-          await AsyncStorage.setItem(TOKEN, token);
-          // Set token reactive var.
-          states.tokenVar(token);
+          // Store token.
+          userSignIn(token);
         } else {
           switch (error) {
             case ERROR_USER_NOT_FOUND:

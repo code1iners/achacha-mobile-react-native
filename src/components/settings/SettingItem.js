@@ -30,10 +30,13 @@ const SettingItem = ({ label, contents }) => {
       <FlatList
         data={contents}
         renderItem={({ item }) => {
+          console.log(item);
           return (
             <SettingItemWrapper
               onPress={() =>
-                navigation.navigate("StackNavigators", item.componentName)
+                item.type === "component"
+                  ? navigation.navigate("StackNavigators", item.componentName)
+                  : item.function()
               }
             >
               <SettingItemText>{item.title}</SettingItemText>
