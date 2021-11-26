@@ -1,4 +1,4 @@
-import { userSignOut } from "../../hooks/useAuth";
+import { userDelete, userSignOut } from "../../hooks/useAuth";
 
 /**
  * ### Setting screen menus.
@@ -16,9 +16,12 @@ export const settingMenus = [
       {
         title: "Sign out",
         type: "function",
-        function: async () => {
-          userSignOut();
-        },
+        function: () => userSignOut(),
+      },
+      {
+        title: "Delete account",
+        type: "function",
+        function: (id) => userDelete(id),
       },
     ],
   },

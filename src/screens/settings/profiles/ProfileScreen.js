@@ -24,7 +24,6 @@ const Container = styled.View``;
 
 const ProfileScreen = () => {
   const me = useMe();
-  console.log(me);
   return (
     <Container>
       <View>

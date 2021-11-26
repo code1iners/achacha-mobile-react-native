@@ -84,6 +84,7 @@ const SignUpScreen = () => {
     });
 
     if (ok) {
+      Alert.alert("Create user", "Successfully created a new account.");
       states.welcomeScreenVar(SIGN_IN);
       states.createdNewUser({ email, password });
     } else {

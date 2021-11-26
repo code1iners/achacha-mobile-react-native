@@ -30,7 +30,6 @@ const SettingItem = ({ label, contents }) => {
       <FlatList
         data={contents}
         renderItem={({ item }) => {
-          console.log(item);
           return (
             <SettingItemWrapper
               onPress={() =>

@@ -1,7 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect } from "react";
 import states from "../apollo/states";
-const ME_QUERY = gql`
+import { userSignOut } from "./useAuth";
+export const ME_QUERY = gql`
   query me {
     me {
       id
@@ -33,7 +34,7 @@ const useMe = () => {
   // Watch.
   useEffect(() => {
     if (data?.me === null) {
-      console.log("Need user sign out.");
+      userSignOut();
     }
   }, [data]);
 

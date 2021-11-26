@@ -32,7 +32,6 @@ const SignInScreen = ({ params }) => {
   const { register, setValue, handleSubmit, watch } = useForm();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const tokenVar = useReactiveVar(states.tokenVar);
   const [signInMutation, { loading: signInLoading }] =
     useMutation(SIGN_IN_MUTATION);
 

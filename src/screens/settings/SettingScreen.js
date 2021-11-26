@@ -4,25 +4,20 @@ import { FlatList } from "react-native";
 import { ThemeText } from "../../utils/styles/styleUtils";
 import { settingMenus } from "../../utils/settings/settingMenus";
 import SettingItem from "../../components/settings/SettingItem";
+import { userDelete, userSignOut } from "../../hooks/useAuth";
+import { useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+
+const DELETE_USER_MUTATION = gql`
+  mutation deleteUser {
+    deleteUser {
+      ok
+      error
+    }
+  }
+`;
 
 const Container = styled.View``;
-
-const SettingItemContainer = styled.View`
-  padding: 20px 20px 0;
-`;
-
-const SettingLabel = styled(ThemeText)`
-  margin-bottom: 10px;
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  opacity: 0.6;
-`;
-const SettingItemWrapper = styled.TouchableOpacity`
-  padding: 15px 0;
-`;
-const SettingItemText = styled(ThemeText)`
-  letter-spacing: 1.25px;
-`;
 
 const ItemSeparator = styled.View`
   width: 100%;
@@ -30,8 +25,36 @@ const ItemSeparator = styled.View`
   background-color: rgba(0, 0, 0, 0.2);
 `;
 
-const SettingScreen = ({ navigation }) => {
+const SettingScreen = () => {
   const renderItem = ({ item }) => <SettingItem {...item} />;
+  const deleteUserMutation = useMutation(DELETE_USER_MUTATION);
+
+  /**
+   * ### Setting screen menus.
+   */
+  const settingMenus = [
+    {
+      id: 1,
+      label: "Profile",
+      contents: [
+        {
+          title: "Me",
+          type: "component",
+          componentName: "ProfileScreen",
+        },
+        {
+          title: "Sign out",
+          type: "function",
+          function: () => userSignOut(),
+        },
+        {
+          title: "Delete account",
+          type: "function",
+          function: () => userDelete(deleteUserMutation),
+        },
+      ],
+    },
+  ];
 
   return (
     <Container>
