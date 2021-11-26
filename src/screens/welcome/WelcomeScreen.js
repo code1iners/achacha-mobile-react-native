@@ -1,13 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../../utils/styles/styleUtils";
 import { SIGN_IN, SIGN_UP } from "../../utils/constants";
 import SignInScreen from "./SignInScreen";
 import SignUpScreen from "./SignUpScreen";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useReactiveVar } from "@apollo/client";
+import states from "../../apollo/states";
 
 const Container = styled.View`
   flex: 1;
-  padding: 20px;
+  padding: 20px 20px 0;
   background-color: ${(props) => props.theme.colors.mainBackgroundColor};
 `;
 
@@ -38,27 +41,28 @@ const WelcomeTitle = styled(ThemeText)`
 
 // Body start.
 
-const Body = styled.View`
-  margin-top: 20px;
-`;
+const Body = styled(KeyboardAwareScrollView)``;
 
 // Body end.
 
 const WelcomeScreen = () => {
-  const [nav, setNav] = useState(SIGN_IN);
+  const nav = useReactiveVar(states.welcomeScreenVar);
 
-  const clickNav = (selectedNav) => {
-    setNav(selectedNav);
-  };
+  const clickSignIn = () => states.welcomeScreenVar(SIGN_IN);
+  const clickSignUp = () => states.welcomeScreenVar(SIGN_UP);
+
+  useEffect(() => {
+    clickSignIn();
+  }, []);
 
   return (
     <Container>
       <Header>
         <NavContainer>
-          <NavButton onPress={() => clickNav(SIGN_IN)}>
+          <NavButton onPress={clickSignIn}>
             <NavText isClicked={nav === SIGN_IN}>Sign in</NavText>
           </NavButton>
-          <NavButton onPress={() => clickNav(SIGN_UP)}>
+          <NavButton onPress={clickSignUp}>
             <NavText isClicked={nav === SIGN_UP}>Sign up</NavText>
           </NavButton>
         </NavContainer>

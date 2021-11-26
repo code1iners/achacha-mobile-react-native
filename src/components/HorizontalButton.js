@@ -15,9 +15,9 @@ const ButtonText = styled(ThemeText)`
   letter-spacing: 2px;
 `;
 
-const HorizontalButton = ({ text = "button" }) => {
+const HorizontalButton = ({ text = "button", onPress }) => {
   return (
-    <Container>
+    <Container onPress={onPress}>
       <ButtonText>{text}</ButtonText>
     </Container>
   );

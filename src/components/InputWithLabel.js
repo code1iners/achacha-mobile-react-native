@@ -27,12 +27,32 @@ const Input = styled.TextInput.attrs({
   color: ${(props) => props.theme.colors.textColor};
 `;
 
-const InputWithLabel = ({ label = "Label", placeholder, hasMarginBottom }) => {
+const InputWithLabel = ({
+  label = "Label",
+  placeholder,
+  reference,
+  returnKeyType,
+  textContentType,
+  hasMarginBottom,
+  secureTextEntry,
+  onChangeText,
+  value,
+  onSubmitEditing,
+}) => {
   return (
     <InputContainer hasMarginBottom={hasMarginBottom}>
       <LabelText>{label}</LabelText>
       <InputWrapper>
-        <Input placeholder={placeholder} />
+        <Input
+          ref={reference}
+          placeholder={placeholder ? placeholder : `Enter ${label}`}
+          returnKeyType={returnKeyType}
+          textContentType={textContentType}
+          onChangeText={onChangeText}
+          value={value}
+          onSubmitEditing={onSubmitEditing}
+          secureTextEntry={secureTextEntry}
+        />
       </InputWrapper>
     </InputContainer>
   );

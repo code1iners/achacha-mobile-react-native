@@ -11,6 +11,8 @@ import { ThemeProvider } from "styled-components";
 import { useColorScheme } from "react-native";
 import { darkTheme, lightTheme } from "./src/utils/themes/colors";
 import { round, spacing } from "./src/utils/themes/spacing";
+import { ApolloProvider } from "@apollo/client";
+import client from "./src/apollo/apollo";
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -68,10 +70,12 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <ThemeProvider theme={theme}>
-        <RootNavigator />
-      </ThemeProvider>
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      <NavigationContainer>
+        <ThemeProvider theme={theme}>
+          <RootNavigator />
+        </ThemeProvider>
+      </NavigationContainer>
+    </ApolloProvider>
   );
 }
