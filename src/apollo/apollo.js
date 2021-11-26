@@ -1,23 +1,31 @@
-import { API_SERVER_URI } from "@env";
+import { API_SERVER_URI, TEST_API_SERVER_URI } from "@env";
 import { createUploadLink } from "apollo-upload-client";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
-import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 import states from "./states";
 
 // Links.
 const uploadLink = createUploadLink({
-  uri: API_SERVER_URI,
+  uri: TEST_API_SERVER_URI,
 });
 
-const onErrorLink = onError((error) => {
-  console.error(error);
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.error(graphQLErrors);
+  }
+
+  if (networkError) {
+    console.error(networkError);
+  }
 });
 
 const authLink = setContext((_, { headers }) => {
   return {
-    ...headers,
-    authorization: states.tokenVar,
+    headers: {
+      ...headers,
+      authorization: states.tokenVar(),
+    },
   };
 });
 

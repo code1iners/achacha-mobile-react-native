@@ -43,33 +43,37 @@ const SignInScreen = ({ params }) => {
    * @param {string} password Valid password.
    */
   const onValid = async ({ email, password }) => {
-    if (!signInLoading) {
-      const {
-        data: {
-          signIn: { ok, error, token },
-        },
-      } = await signInMutation({
-        variables: {
-          email,
-          password,
-        },
-      });
+    try {
+      if (!signInLoading) {
+        const {
+          data: {
+            signIn: { ok, error, token },
+          },
+        } = await signInMutation({
+          variables: {
+            email,
+            password,
+          },
+        });
 
-      if (ok) {
-        // Token persist.
-        await AsyncStorage.setItem(TOKEN, token);
-        // Set token reactive var.
-        states.tokenVar(token);
-      } else {
-        switch (error) {
-          case ERROR_USER_NOT_FOUND:
-            Alert.alert("Email", error);
-            break;
-          case ERROR_INCORRECT_PASSWORD:
-            Alert.alert("Password", error);
-            break;
+        if (ok) {
+          // Token persist.
+          await AsyncStorage.setItem(TOKEN, token);
+          // Set token reactive var.
+          states.tokenVar(token);
+        } else {
+          switch (error) {
+            case ERROR_USER_NOT_FOUND:
+              Alert.alert("Email", error);
+              break;
+            case ERROR_INCORRECT_PASSWORD:
+              Alert.alert("Password", error);
+              break;
+          }
         }
       }
+    } catch (error) {
+      console.error("onValid", error);
     }
   };
 
