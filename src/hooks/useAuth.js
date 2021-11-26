@@ -21,7 +21,7 @@ export const userSignIn = async (token) => {
 /**
  * ### Remove access token method.
  */
-export const userSignOut = async ({ asking = true }) => {
+export const userSignOut = async (asking = true) => {
   try {
     if (asking) {
       Alert.alert("Sign out", "Are you sure you want to sign out?", [
@@ -57,31 +57,33 @@ export const userSignOut = async ({ asking = true }) => {
  */
 export const userDelete = (deleteFunction) => {
   try {
-    Alert.alert("Delete user", "Are you sure you want to delete account?", [
-      {
-        text: "OK",
-        onPress: async () => {
-          const [deleteUserMutation, { loading }] = deleteFunction;
-          if (!loading) {
-            const {
-              data: { deleteUser },
-            } = await deleteUserMutation();
-            if (deleteUser?.ok) {
-              userSignOut({
-                asking: false,
-              });
-            } else {
-              Alert.alert("Delete user", deleteUser?.error);
+    Alert.alert(
+      "Delete account",
+      "Are you sure you want to delete account?\nIt cannot be reversed.",
+      [
+        {
+          text: "OK",
+          onPress: async () => {
+            const [deleteUserMutation, { loading }] = deleteFunction;
+            if (!loading) {
+              const {
+                data: { deleteUser },
+              } = await deleteUserMutation();
+              if (deleteUser?.ok) {
+                userSignOut(false);
+              } else {
+                Alert.alert("Delete account", deleteUser?.error);
+              }
             }
-          }
+          },
+          style: "destructive",
         },
-        style: "destructive",
-      },
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-    ]);
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
   } catch (error) {
     console.error("[userDelete]", error);
   }
