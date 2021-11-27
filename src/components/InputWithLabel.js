@@ -38,6 +38,7 @@ const InputWithLabel = ({
   onChangeText,
   value,
   onSubmitEditing,
+  editable = true,
 }) => {
   return (
     <InputContainer hasMarginBottom={hasMarginBottom}>
@@ -52,6 +53,7 @@ const InputWithLabel = ({
           value={value}
           onSubmitEditing={onSubmitEditing}
           secureTextEntry={secureTextEntry}
+          editable={editable}
         />
       </InputWrapper>
     </InputContainer>

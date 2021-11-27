@@ -1,12 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
-import { View, Text, Keyboard, Alert } from "react-native";
+import { View, Text, Keyboard, Alert, ActivityIndicator } from "react-native";
 import InputWithLabel from "../../../components/InputWithLabel";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useForm } from "react-hook-form";
 import HorizontalButton from "../../../components/HorizontalButton";
 import HeaderRightTextButton from "../../../components/headers/HeaderRightTextButton";
 import { gql, useMutation } from "@apollo/client";
+import UserAvatar from "../../../components/UserAvatar";
+import { ReactNativeFile } from "extract-files";
+import { colors } from "../../../utils/themes/colors";
+import LoadingView from "../../../components/LoadingView";
 
 const PROFILE_UPDATE_MUTATION = gql`
   mutation updateProfile(
@@ -43,7 +47,7 @@ const Form = styled(KeyboardAwareScrollView)`
   padding: 20px;
 `;
 
-const ProfileEditScreen = ({ route, navigation }) => {
+const ProfileEditScreen = ({ route: { params }, navigation }) => {
   const { register, setValue, watch, handleSubmit, getValues } = useForm();
   const [profileUpdateMutation, { loading: profileUpdateLoading }] =
     useMutation(PROFILE_UPDATE_MUTATION);
@@ -51,27 +55,14 @@ const ProfileEditScreen = ({ route, navigation }) => {
   const emailRef = useRef();
   const usernameRef = useRef();
 
+  const headerRight = () =>
+    profileUpdateLoading ? (
+      <LoadingView />
+    ) : (
+      <HeaderRightTextButton text="Save" onPress={handleSaveClick} />
+    );
+
   // Methods.
-  const handleSelectPhotoClick = () => {
-    console.log("Go select photo screen.");
-  };
-
-  const handleSaveClick = async () => {
-    try {
-      if (profileUpdateLoading) return;
-
-      const email = getValues("email");
-      const username = getValues("username");
-
-      profileUpdateMutation({
-        variables: {
-          ...(email && { email }),
-          ...(username && { username }),
-        },
-        update: profileUpdated,
-      });
-    } catch (error) {}
-  };
 
   const profileUpdated = (cache, result) => {
     try {
@@ -115,29 +106,75 @@ const ProfileEditScreen = ({ route, navigation }) => {
     }
   };
 
+  // Handlers.
+  const handleSelectPhotoClick = () => {
+    navigation.navigate("StackNavigators", {
+      screen: "SelectPhotoScreen",
+      params: {
+        ...(params?.me && { me: params?.me }),
+      },
+    });
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      if (profileUpdateLoading) return;
+
+      const email = getValues("email");
+      const username = getValues("username");
+
+      let avatar;
+      if (params?.selectedPhoto) {
+        avatar = new ReactNativeFile({
+          uri: params?.selectedPhoto,
+          type: "image/jpeg",
+          name: "profile",
+        });
+      }
+
+      profileUpdateMutation({
+        variables: {
+          ...(email && { email }),
+          ...(username && { username }),
+          ...(avatar && { avatar }),
+        },
+        update: profileUpdated,
+      });
+    } catch (error) {}
+  };
+
   // Watch.
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => {
-        return <HeaderRightTextButton text="Save" onPress={handleSaveClick} />;
-      },
+      headerRight,
     });
   }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight,
+    });
+  }, [params, profileUpdateLoading]);
 
   useEffect(() => {
     register("email");
     register("username");
 
-    if (route?.params) {
-      const { email, username } = route?.params?.me;
+    if (params?.me) {
+      const { email, username } = params?.me;
       setValue("email", email);
       setValue("username", username);
     }
   }, [register]);
 
   return (
-    <Container onPress={() => Keyboard.dismiss()}>
+    <Container onPress={Keyboard.dismiss}>
       <Form>
+        <UserAvatar
+          avatar={
+            params?.selectedPhoto ? params?.selectedPhoto : params?.me.avatar
+          }
+        />
         <InputWithLabel
           reference={emailRef}
           label="email"
@@ -147,6 +184,7 @@ const ProfileEditScreen = ({ route, navigation }) => {
           value={watch("email")}
           returnKeyType="next"
           textContentType="emailAddress"
+          editable={!profileUpdateLoading}
           onSubmitEditing={() => usernameRef.current?.focus()}
         />
 
@@ -159,10 +197,12 @@ const ProfileEditScreen = ({ route, navigation }) => {
           value={watch("username")}
           returnKeyType="done"
           textContentType="username"
+          editable={!profileUpdateLoading}
         />
 
         <HorizontalButton
           text="Select photo"
+          isLoading={profileUpdateLoading}
           onPress={handleSelectPhotoClick}
         />
       </Form>

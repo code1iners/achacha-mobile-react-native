@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileScreen from "../screens/settings/profiles/ProfileScreen";
 import { colors, getIsDark } from "../utils/themes/colors";
 import ProfileEditScreen from "../screens/settings/profiles/ProfileEditScreen";
+import SelectPhotoScreen from "../screens/shared/SelectPhotoScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,7 @@ const StackNavigators = () => {
         headerTitleAlign: "center",
 
         contentStyle: {
-          backgroundColor: colors.black,
+          backgroundColor: isDark ? colors.black : colors.white,
         },
       }}
     >
@@ -32,6 +33,13 @@ const StackNavigators = () => {
         }}
         name="ProfileEditScreen"
         component={ProfileEditScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Select Photo",
+        }}
+        name="SelectPhotoScreen"
+        component={SelectPhotoScreen}
       />
     </Stack.Navigator>
   );
