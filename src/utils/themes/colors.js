@@ -2,6 +2,8 @@ import { useColorScheme } from "react-native";
 
 export const colors = {
   accentColor: "#2ecc71",
+  blue: "#0652DD",
+  yellow: "#f1c40f",
   black: "#1e272e",
   darkTextColor: "#D2D0CA",
   darkPrimary: "#F0EDCC",

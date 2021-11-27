@@ -10,6 +10,8 @@ declare module "styled-components" {
       primary: string;
       secondary: string;
       accentColor: string;
+      blue: string;
+      yellow: string;
     };
 
     round: {

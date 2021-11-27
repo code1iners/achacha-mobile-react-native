@@ -34,7 +34,9 @@ const SettingItem = ({ label, contents }) => {
             <SettingItemWrapper
               onPress={() =>
                 item.type === "component"
-                  ? navigation.navigate("StackNavigators", item.componentName)
+                  ? navigation.navigate("StackNavigators", {
+                      screen: item.componentName,
+                    })
                   : item.function()
               }
             >
