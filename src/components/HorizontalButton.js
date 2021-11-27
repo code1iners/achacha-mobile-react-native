@@ -7,7 +7,7 @@ const Container = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   padding: ${(props) => props.theme.spacing.m};
-  border: 1px solid ${(props) => props.theme.colors.primary};
+  border: 1px solid ${(props) => props.theme.colors.textColor};
   min-height: 50px;
 `;
 const ButtonText = styled(ThemeText)`
