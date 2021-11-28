@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components/native";
 import { GestureResponderEvent, TouchableOpacity } from "react-native";
 
-const Container = styled.View``;
+const Container = styled.View`
+  /* margin-right: 10px; */
+`;
 const ButtonText = styled.Text`
   color: ${(props) => props.theme.colors.textColor};
   letter-spacing: 1.5px;

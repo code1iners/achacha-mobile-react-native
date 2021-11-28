@@ -21,6 +21,7 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState();
   const [cursor, setCursor] = useState();
+  const [enabled, setEnabled] = useState(true);
 
   const { width: screenWidth } = useWindowDimensions();
   const numColumns = 4;
@@ -30,11 +31,9 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
   );
 
   const getPhotos = async () => {
-    const { assets, totalCount, endCursor } = await MediaLibrary.getAssetsAsync(
-      {
-        ...(cursor && { after: cursor }),
-      }
-    );
+    const { assets, endCursor } = await MediaLibrary.getAssetsAsync({
+      ...(cursor && { after: cursor }),
+    });
 
     setPhotos((previous) => [...previous, ...assets]);
     if (!selectedPhoto) {
@@ -45,9 +44,11 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
   };
 
   const getPermissions = async () => {
-    const res = await MediaLibrary.getPermissionsAsync();
+    if (enabled) {
+      const res = await MediaLibrary.getPermissionsAsync();
 
-    getPhotos();
+      getPhotos();
+    }
   };
 
   // Handlers.
@@ -57,7 +58,7 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
 
   const handleHeaderSelectClick = () => {
     navigation.navigate("StackNavigators", {
-      screen: "ProfileEditScreen",
+      screen: params.from,
       params: {
         selectedPhoto,
         ...params,
@@ -71,6 +72,8 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
     navigation.setOptions({
       headerRight,
     });
+
+    return () => setEnabled(false);
   }, []);
 
   useEffect(() => {

@@ -111,6 +111,7 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
     navigation.navigate("StackNavigators", {
       screen: "SelectPhotoScreen",
       params: {
+        from: "ProfileEditScreen",
         ...(params?.me && { me: params?.me }),
       },
     });

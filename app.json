@@ -3,7 +3,12 @@
     "name": "Achacha",
     "slug": "Achacha",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "icon": "/assets/images/logo.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "plugins": [
       [
         "expo-media-library",
@@ -13,7 +18,24 @@
           "isAccessMediaLocationEnabled": true
         }
       ]
-    ]
+    ],
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "co.codeliner.achacha",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "co.codeliner.achacha",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo_adaptive_icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/images/logo.png"
+    }
   },
   "name": "Achacha"
 }

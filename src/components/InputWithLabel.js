@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../utils/styles/styleUtils";
+import ErrorText from "./ErrorText";
 
 const InputContainer = styled.View`
   margin-bottom: ${(props) => (props.hasMarginBottom ? "20px" : 0)};
@@ -16,6 +17,7 @@ const InputWrapper = styled(FlexView)`
   align-items: center;
   border: 1px solid ${(props) => props.theme.colors.textColor};
   background-color: ${(props) => props.theme.colors.mainBackgroundColor};
+  margin-bottom: 5px;
 `;
 const Input = styled.TextInput.attrs({
   placeholderTextColor: "grey",
@@ -28,9 +30,10 @@ const Input = styled.TextInput.attrs({
 `;
 
 const InputWithLabel = ({
+  reference,
   label = "Label",
   placeholder,
-  reference,
+  error,
   returnKeyType,
   textContentType,
   hasMarginBottom,
@@ -56,6 +59,8 @@ const InputWithLabel = ({
           editable={editable}
         />
       </InputWrapper>
+
+      {error ? <ErrorText text={error} /> : null}
     </InputContainer>
   );
 };
