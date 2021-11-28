@@ -11,6 +11,7 @@ import CREATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/createAccoun
 import { createFile } from "../../utils/fileUtils";
 import { Alert } from "react-native";
 import { gql } from "@apollo/client";
+import LoadingView from "../../components/LoadingView";
 
 const Container = styled(KeyboardAwareScrollView)`
   flex: 1;
@@ -49,12 +50,15 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
   const [createAccountMutation, { loading: createAccountLoading }] =
     useMutation(CREATE_ACCOUNT_MUTATION);
 
-  const headerRight = () => (
-    <HeaderRightTextButton
-      text="Create"
-      onPress={handleSubmit(onValid, onInvalid)}
-    />
-  );
+  const headerRight = () =>
+    createAccountLoading ? (
+      <LoadingView />
+    ) : (
+      <HeaderRightTextButton
+        text="Create"
+        onPress={handleSubmit(onValid, onInvalid)}
+      />
+    );
 
   // Methods.
   /**
@@ -81,7 +85,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
         cache.modify({
           fields: {
             accounts(previous) {
-              return [...previous, accountFragment];
+              return [accountFragment, ...previous];
             },
           },
         });
@@ -185,7 +189,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
     navigation.setOptions({
       headerRight,
     });
-  }, [params]);
+  }, [params, createAccountLoading]);
 
   useEffect(() => {
     register("title", {
@@ -229,6 +233,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
           value={watch("title")}
           onSubmitEditing={() => subtitleRef.current?.focus()}
           error={titleError}
+          editable={!createAccountLoading}
         />
 
         <InputWithLabel
@@ -240,6 +245,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
           onChangeText={(text) => setValue("subtitle", text)}
           value={watch("subtitle")}
           onSubmitEditing={() => accountNameRef.current?.focus()}
+          editable={!createAccountLoading}
         />
 
         <InputWithLabel
@@ -252,6 +258,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
           value={watch("accountName")}
           onSubmitEditing={() => accountPasswordRef.current?.focus()}
           error={accountNameError}
+          editable={!createAccountLoading}
         />
 
         <InputWithLabel
@@ -264,6 +271,7 @@ const AccountCreateScreen = ({ route: { params }, navigation, from }) => {
           value={watch("accountPassword")}
           onSubmitEditing={handleSubmit(onValid, onInvalid)}
           error={accountPasswordError}
+          editable={!createAccountLoading}
         />
       </Form>
     </Container>
