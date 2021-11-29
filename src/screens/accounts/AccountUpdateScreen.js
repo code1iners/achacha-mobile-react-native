@@ -7,11 +7,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useForm } from "react-hook-form";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 import { useMutation } from "@apollo/client";
-import CREATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/createAccount.mutation";
 import { createFile } from "../../utils/fileUtils";
 import { Alert } from "react-native";
-import { gql } from "@apollo/client";
 import LoadingView from "../../components/LoadingView";
+import UPDATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/updateAccount.mutation";
 
 const Container = styled(KeyboardAwareScrollView)`
   flex: 1;
@@ -33,7 +32,7 @@ const Form = styled.View`
   flex: 1;
 `;
 
-const AccountCreateScreen = ({ route: { params }, navigation }) => {
+const AccountUpdateScreen = ({ route: { params }, navigation }) => {
   const isDark = getIsDark();
 
   const [titleError, setTitleError] = useState();
@@ -42,76 +41,28 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
 
   const { register, setValue, watch, handleSubmit } = useForm();
 
+  const [updateAccountMutation, { loading: updateAccountLoading }] =
+    useMutation(UPDATE_ACCOUNT_MUTATION);
+
   const titleRef = useRef();
   const subtitleRef = useRef();
   const accountNameRef = useRef();
   const accountPasswordRef = useRef();
 
-  const [createAccountMutation, { loading: createAccountLoading }] =
-    useMutation(CREATE_ACCOUNT_MUTATION);
-
+  /**
+   * ### Header right component.
+   */
   const headerRight = () =>
-    createAccountLoading ? (
+    updateAccountLoading ? (
       <LoadingView />
     ) : (
       <HeaderRightTextButton
-        text="Create"
+        text="Update"
         onPress={handleSubmit(onValid, onInvalid)}
       />
     );
 
   // Methods.
-  /**
-   * ### Create account.
-   */
-  const updateCreateAccount = (cache, { data }) => {
-    try {
-      const { createAccount } = data;
-
-      if (createAccount?.ok) {
-        const accountFragment = cache.writeFragment({
-          fragment: gql`
-            fragment NewAccount on Account {
-              title
-              subtitle
-              accountName
-              accountPassword
-              thumbnail
-            }
-          `,
-          data: createAccount?.data,
-        });
-
-        cache.modify({
-          fields: {
-            accounts(previous) {
-              return [accountFragment, ...previous];
-            },
-          },
-        });
-
-        Alert.alert(
-          "Succeed",
-          "Successfully created a new account information.",
-          [
-            {
-              text: "OK",
-              style: "destructive",
-              onPress: () => navigation.pop(),
-            },
-          ]
-        );
-      } else {
-        Alert.alert(
-          "Warning",
-          createAccount?.error || "Failed create account."
-        );
-      }
-    } catch (error) {
-      console.error("[updateCreateAccount]", error);
-    }
-  };
-
   /**
    * ### Error clear method.
    */
@@ -121,36 +72,87 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
     setAccountPasswordError("");
   };
 
+  const updateUpdatedAccount = (cache, result) => {
+    try {
+      const {
+        data: { updateAccount },
+      } = result;
+
+      if (updateAccount?.ok) {
+        const { title, subtitle, accountName, accountPassword, thumbnail } =
+          updateAccount?.data;
+
+        cache.modify({
+          id: cache.identify(updateAccount?.data),
+          fields: {
+            title() {
+              return title;
+            },
+            subtitle() {
+              return subtitle;
+            },
+            accountName() {
+              return accountName;
+            },
+            accountPassword() {
+              return accountPassword;
+            },
+            thumbnail() {
+              return thumbnail;
+            },
+          },
+        });
+
+        Alert.alert("Succeed", "Successfully updated the account item.", [
+          {
+            text: "OK",
+            style: "destructive",
+            onPress: () => navigation.pop(),
+          },
+        ]);
+      } else {
+        Alert.alert("Failed", updateAccount?.error);
+      }
+    } catch (error) {
+      console.error("[updateUpdatedAccount]", error);
+      Alert.alert("Warning", "Failed updated account cache.");
+    }
+  };
+
   /**
-   * ### Create valid handling method.
+   * ### Update valid handling method.
    */
   const onValid = async ({ title, subtitle, accountName, accountPassword }) => {
-    errorClear();
+    try {
+      if (updateAccountLoading) return;
 
-    let thumbnail;
-    if (params?.selectedPhoto) {
-      thumbnail = createFile({
-        uri: params?.selectedPhoto,
-        name: "account",
-      });
-    }
+      errorClear();
 
-    if (!createAccountLoading) {
-      await createAccountMutation({
+      let thumbnail;
+      if (params?.selectedPhoto) {
+        thumbnail = createFile({
+          uri: params?.selectedPhoto,
+          name: "account",
+        });
+      }
+      await updateAccountMutation({
         variables: {
+          id: params?.account.id,
           title,
           subtitle,
           accountName,
           accountPassword,
           ...(thumbnail && { thumbnail }),
         },
-        update: updateCreateAccount,
+        update: updateUpdatedAccount,
       });
+    } catch (error) {
+      console.error("[onValid]", error);
     }
   };
 
   /**
-   * ### Create invalid handling method.
+   * ### Update invalid handling method.
    */
   const onInvalid = ({ title, accountName, accountPassword }) => {
     errorClear();
@@ -173,7 +175,8 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
     navigation.navigate("StackNavigators", {
       screen: "SelectPhotoScreen",
       params: {
-        from: "AccountCreateScreen",
+        from: "AccountUpdateScreen",
+        ...(params?.account && { account: params?.account }),
       },
     });
   };
@@ -186,10 +189,11 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
   }, []);
 
   useEffect(() => {
+    console.log(params);
     navigation.setOptions({
       headerRight,
     });
-  }, [params, createAccountLoading]);
+  }, [params, updateAccountLoading]);
 
   useEffect(() => {
     register("title", {
@@ -202,6 +206,11 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
     register("accountPassword", {
       required: true,
     });
+
+    setValue("title", params?.account.title);
+    setValue("subtitle", params?.account.subtitle);
+    setValue("accountName", params?.account.accountName);
+    setValue("accountPassword", params?.account.accountPassword);
   }, [register]);
 
   return (
@@ -210,6 +219,12 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
         {params?.selectedPhoto ? (
           <ThumbnailImage
             source={{ uri: params?.selectedPhoto }}
+            width={150}
+            height={150}
+          />
+        ) : params?.account.thumbnail ? (
+          <ThumbnailImage
+            source={{ uri: params?.account.thumbnail }}
             width={150}
             height={150}
           />
@@ -233,7 +248,7 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
           value={watch("title")}
           onSubmitEditing={() => subtitleRef.current?.focus()}
           error={titleError}
-          editable={!createAccountLoading}
+          editable={!updateAccountLoading}
         />
 
         <InputWithLabel
@@ -245,7 +260,7 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
           onChangeText={(text) => setValue("subtitle", text)}
           value={watch("subtitle")}
           onSubmitEditing={() => accountNameRef.current?.focus()}
-          editable={!createAccountLoading}
+          editable={!updateAccountLoading}
         />
 
         <InputWithLabel
@@ -258,7 +273,7 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
           value={watch("accountName")}
           onSubmitEditing={() => accountPasswordRef.current?.focus()}
           error={accountNameError}
-          editable={!createAccountLoading}
+          editable={!updateAccountLoading}
         />
 
         <InputWithLabel
@@ -271,11 +286,11 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
           value={watch("accountPassword")}
           onSubmitEditing={handleSubmit(onValid, onInvalid)}
           error={accountPasswordError}
-          editable={!createAccountLoading}
+          editable={!updateAccountLoading}
         />
       </Form>
     </Container>
   );
 };
 
-export default AccountCreateScreen;
+export default AccountUpdateScreen;

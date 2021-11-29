@@ -5,6 +5,7 @@ import { colors, getIsDark } from "../utils/themes/colors";
 import ProfileEditScreen from "../screens/settings/profiles/ProfileEditScreen";
 import SelectPhotoScreen from "../screens/shared/SelectPhotoScreen";
 import AccountCreateScreen from "../screens/accounts/AccountCreateScreen";
+import AccountUpdateScreen from "../screens/accounts/AccountUpdateScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,13 @@ const StackNavigators = () => {
         }}
         name="AccountCreateScreen"
         component={AccountCreateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Account Update",
+        }}
+        name="AccountUpdateScreen"
+        component={AccountUpdateScreen}
       />
       {/* Account end. */}
     </Stack.Navigator>

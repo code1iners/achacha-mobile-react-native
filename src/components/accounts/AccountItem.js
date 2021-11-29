@@ -4,9 +4,10 @@ import { FlexView, ThemeText } from "../../utils/styles/styleUtils";
 import { colors, getIsDark } from "../../utils/themes/colors";
 import { Ionicons } from "@expo/vector-icons";
 import ColoredCircle from "../shared/ColoredCircle";
-import { Alert, TouchableOpacity, View } from "react-native";
+import { Alert, View } from "react-native";
 import { useMutation } from "@apollo/client";
 import DELETE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/deleteAccount.mutation";
+import { useNavigation } from "@react-navigation/native";
 
 const Container = styled(FlexView)`
   margin: ${(props) =>
@@ -71,6 +72,7 @@ const AccountItem = ({
   const isFirstItem = itemIndex === 0;
   const [deleteAccountMutation, { loading: deleteAccountLoading }] =
     useMutation(DELETE_ACCOUNT_MUTATION);
+  const navigation = useNavigation();
 
   // Methods.
   /**
@@ -146,7 +148,19 @@ const AccountItem = ({
    * ### Edit account item event handler.
    */
   const handleEditClick = () => {
-    console.log("handleEditClick");
+    navigation.navigate("StackNavigators", {
+      screen: "AccountUpdateScreen",
+      params: {
+        account: {
+          id,
+          thumbnail,
+          title,
+          subtitle,
+          accountName,
+          accountPassword,
+        },
+      },
+    });
   };
 
   return (
