@@ -7,7 +7,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useForm } from "react-hook-form";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 import { useMutation } from "@apollo/client";
-import CREATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/createAccount/createAccount.mutation";
+import CREATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/createAccount.mutation";
 import { createFile } from "../../utils/fileUtils";
 import { Alert } from "react-native";
 import { gql } from "@apollo/client";

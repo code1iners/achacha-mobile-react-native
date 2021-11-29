@@ -3,8 +3,8 @@ import { useColorScheme } from "react-native";
 export const colors = {
   accentColor: "#2ecc71",
   blue: "#0652DD",
-  yellow: "#f1c40f",
-  errorRed: "tomato",
+  yellow: "#feb024",
+  errorRed: "#fd4646",
 
   black: "#1e272e",
   darkTextColor: "#D2D0CA",
