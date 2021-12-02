@@ -11,13 +11,39 @@ import DELETE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/deleteAccoun
 import { useNavigation } from "@react-navigation/native";
 
 const Container = styled(FlexView)`
-  width: 100%;
+  /* flex: 1; */
+  align-items: center;
+  margin: ${(props) =>
+    props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
+`;
+
+const DeleteAccountContainer = styled(
+  Animated.createAnimatedComponent(FlexView)
+)`
+  height: 100%;
+  position: absolute;
+  right: -70px;
   align-items: center;
 `;
 
+const DeleteAccountText = styled.Text`
+  color: ${colors.errorRed};
+`;
+
+const UpdateAccountContainer = styled(
+  Animated.createAnimatedComponent(FlexView)
+)`
+  height: 100%;
+  position: absolute;
+  left: -70px;
+  align-items: center;
+`;
+
+const UpdateAccountText = styled.Text`
+  color: ${colors.yellow};
+`;
+
 const AccountContainer = styled(Animated.createAnimatedComponent(FlexView))`
-  margin: ${(props) =>
-    props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
   padding: 10px;
   border-radius: 10px;
   background-color: ${(props) =>
@@ -84,6 +110,12 @@ const AccountItem = ({
 
   // Animations start.
 
+  const deleteAccountPosition = position.interpolate({
+    inputRange: [-70, 70],
+    outputRange: [-70, 70],
+    extrapolate: "clamp",
+  });
+
   const onPressIn = Animated.spring(scale, {
     toValue: 0.9,
     useNativeDriver: true,
@@ -119,13 +151,13 @@ const AccountItem = ({
         position.setValue(dx);
       },
       onPanResponderRelease: (evt, { dx }) => {
-        const { itemId } = evt._targetInst.memoizedProps;
+        const { item } = evt._targetInst.memoizedProps;
         if (dx < -200) {
-          deleteAccount(itemId);
+          deleteAccount(item?.id);
           itemOutLeft.start();
         } else if (dx > 200) {
-          deleteAccount(itemId);
-          itemOutRight.start();
+          handleEditClick({ ...item });
+          Animated.parallel([goOrigin, onPressOut]).start();
         } else {
           Animated.parallel([goOrigin, onPressOut]).start();
         }
@@ -208,7 +240,14 @@ const AccountItem = ({
   /**
    * ### Edit account item event handler.
    */
-  const handleEditClick = () => {
+  const handleEditClick = ({
+    id,
+    thumbnail,
+    title,
+    subtitle,
+    accountName,
+    accountPassword,
+  }) => {
     navigation.navigate("StackNavigators", {
       screen: "AccountUpdateScreen",
       params: {
@@ -225,11 +264,21 @@ const AccountItem = ({
   };
 
   return (
-    <Container>
+    <Container isFirstItem={isFirstItem}>
+      <DeleteAccountContainer
+        style={{ transform: [{ translateX: deleteAccountPosition }] }}
+      >
+        <DeleteAccountText>Delete</DeleteAccountText>
+      </DeleteAccountContainer>
+      <UpdateAccountContainer
+        style={{ transform: [{ translateX: deleteAccountPosition }] }}
+      >
+        <UpdateAccountText>Update</UpdateAccountText>
+      </UpdateAccountContainer>
+
       <AccountContainer
         {...panResponder.panHandlers}
         isDark={isDark}
-        isFirstItem={isFirstItem}
         style={{
           transform: [
             {
@@ -238,7 +287,7 @@ const AccountItem = ({
             { scale },
           ],
         }}
-        itemId={id}
+        item={{ id, thumbnail, title, subtitle, accountName, accountPassword }}
       >
         <AccountThumbnailWrapper>
           {thumbnail ? (
@@ -261,7 +310,19 @@ const AccountItem = ({
 
             <AccountActionsContainer>
               {/* Edit button */}
-              <ColoredCircle color={colors.yellow} onPress={handleEditClick} />
+              <ColoredCircle
+                color={colors.yellow}
+                onPress={() =>
+                  handleEditClick({
+                    id,
+                    thumbnail,
+                    title,
+                    subtitle,
+                    accountName,
+                    accountPassword,
+                  })
+                }
+              />
               {/* Spacing */}
               <View style={{ marginRight: 10 }} />
               {/* Delete button */}
