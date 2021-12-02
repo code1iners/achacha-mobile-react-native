@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, PanResponder } from "react-native";
 import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../../utils/styles/styleUtils";
@@ -17,6 +17,14 @@ const Container = styled(FlexView)`
     props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
 `;
 
+const Background = styled(Animated.View)`
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  flex: 1;
+`;
+
 const DeleteAccountContainer = styled(
   Animated.createAnimatedComponent(FlexView)
 )`
@@ -26,8 +34,8 @@ const DeleteAccountContainer = styled(
   align-items: center;
 `;
 
-const DeleteAccountText = styled.Text`
-  color: ${colors.errorRed};
+const DeleteAccountText = styled(Animated.Text)`
+  color: white;
 `;
 
 const UpdateAccountContainer = styled(
@@ -40,14 +48,16 @@ const UpdateAccountContainer = styled(
 `;
 
 const UpdateAccountText = styled.Text`
-  color: ${colors.yellow};
+  color: white;
 `;
 
 const AccountContainer = styled(Animated.createAnimatedComponent(FlexView))`
   padding: 10px;
+  border: 1px solid
+    ${(props) =>
+      props.isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
   border-radius: 10px;
-  background-color: ${(props) =>
-    props.isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
+  background-color: ${(props) => (props.isDark ? colors.black : colors.white)};
 `;
 const AccountThumbnailWrapper = styled.View``;
 const AccountThumbnail = styled.Image`
@@ -90,16 +100,18 @@ const AccountPassword = styled(ThemeText)`
   opacity: 0.8;
 `;
 
-const AccountItem = ({
-  id,
-  thumbnail,
-  title,
-  subtitle,
-  accountName,
-  accountPassword,
-  itemIndex,
-}) => {
-  const isDark = getIsDark;
+const AccountItem = (params) => {
+  const [id, setId] = useState(params?.id);
+  const [thumbnail, setThumbnail] = useState(params?.thumbnail);
+  const [title, setTitle] = useState(params?.title);
+  const [subtitle, setSubtitle] = useState(params?.subtitle);
+  const [accountName, setAccountName] = useState(params?.accountName);
+  const [accountPassword, setAccountPassword] = useState(
+    params?.accountPassword
+  );
+  const [itemIndex, setItemIndex] = useState(params?.itemIndex);
+
+  const isDark = getIsDark();
   const isFirstItem = itemIndex === 0;
   const [deleteAccountMutation, { loading: deleteAccountLoading }] =
     useMutation(DELETE_ACCOUNT_MUTATION);
@@ -110,36 +122,51 @@ const AccountItem = ({
 
   // Animations start.
 
+  const backgroundColor = position.interpolate({
+    inputRange: [-100, 0, 100],
+    outputRange: [colors.errorRed, "rgba(0, 0, 0, 0)", colors.yellow],
+    extrapolate: "clamp",
+  });
+
   const deleteAccountPosition = position.interpolate({
-    inputRange: [-70, 70],
-    outputRange: [-70, 70],
+    inputRange: [-100, 100],
+    outputRange: [-100, 100],
+    extrapolate: "clamp",
+  });
+
+  const opacity = position.interpolate({
+    inputRange: [-100, 0, 100],
+    outputRange: [1, 0, 1],
     extrapolate: "clamp",
   });
 
   const onPressIn = Animated.spring(scale, {
     toValue: 0.9,
-    useNativeDriver: true,
+    useNativeDriver: false,
   });
 
   const onPressOut = Animated.spring(scale, {
     toValue: 1,
-    useNativeDriver: true,
+    useNativeDriver: false,
   });
 
   const itemOutRight = Animated.spring(position, {
     toValue: 400,
-    useNativeDriver: true,
+    useNativeDriver: false,
   });
 
   const itemOutLeft = Animated.spring(position, {
     toValue: -400,
-    useNativeDriver: true,
+    useNativeDriver: false,
   });
 
-  const goOrigin = Animated.spring(position, {
+  const goCenter = Animated.spring(position, {
     toValue: 0,
-    useNativeDriver: true,
+    useNativeDriver: false,
+    tension: 1,
   });
+
+  const goOrigin = Animated.parallel([goCenter, onPressOut]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -152,14 +179,14 @@ const AccountItem = ({
       },
       onPanResponderRelease: (evt, { dx }) => {
         const { item } = evt._targetInst.memoizedProps;
-        if (dx < -200) {
-          deleteAccount(item?.id);
+        if (dx < -100) {
+          handleDeleteClick(item?.id);
           itemOutLeft.start();
-        } else if (dx > 200) {
+        } else if (dx > 100) {
           handleEditClick({ ...item });
-          Animated.parallel([goOrigin, onPressOut]).start();
+          itemOutRight.start(() => goOrigin.start());
         } else {
-          Animated.parallel([goOrigin, onPressOut]).start();
+          goOrigin.start();
         }
       },
     })
@@ -219,7 +246,7 @@ const AccountItem = ({
   /**
    * ### Delete account item event handler.
    */
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (id) => {
     Alert.alert(
       `Delete '${title}' account`,
       "Surely you want a delete account?",
@@ -232,6 +259,7 @@ const AccountItem = ({
         {
           text: "Cancel",
           style: "cancel",
+          onPress: () => goOrigin.start(),
         },
       ]
     );
@@ -263,15 +291,34 @@ const AccountItem = ({
     });
   };
 
+  // Watch.
+  useEffect(() => {
+    setId(params?.id);
+    setThumbnail(params?.thumbnail);
+    setTitle(params?.title);
+    setSubtitle(params?.subtitle);
+    setAccountName(params?.accountName);
+    setAccountPassword(params?.accountPassword);
+    setItemIndex(params?.itemIndex);
+  }, [params]);
+
   return (
     <Container isFirstItem={isFirstItem}>
+      <Background
+        style={{
+          backgroundColor,
+          transform: [{ scale: scale.__getValue() - 0.125 }],
+        }}
+      />
+
       <DeleteAccountContainer
-        style={{ transform: [{ translateX: deleteAccountPosition }] }}
+        style={{ opacity, transform: [{ translateX: deleteAccountPosition }] }}
       >
         <DeleteAccountText>Delete</DeleteAccountText>
       </DeleteAccountContainer>
+
       <UpdateAccountContainer
-        style={{ transform: [{ translateX: deleteAccountPosition }] }}
+        style={{ opacity, transform: [{ translateX: deleteAccountPosition }] }}
       >
         <UpdateAccountText>Update</UpdateAccountText>
       </UpdateAccountContainer>
@@ -328,7 +375,7 @@ const AccountItem = ({
               {/* Delete button */}
               <ColoredCircle
                 color={colors.errorRed}
-                onPress={handleDeleteClick}
+                onPress={() => handleDeleteClick(id)}
               />
             </AccountActionsContainer>
           </AccountInfoTopContainer>

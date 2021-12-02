@@ -189,7 +189,6 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log(params);
     navigation.setOptions({
       headerRight,
     });
