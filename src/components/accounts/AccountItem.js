@@ -168,29 +168,27 @@ const AccountItem = (params) => {
 
   const goOrigin = Animated.parallel([goCenter, onPressOut]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        onPressIn.start();
-      },
-      onPanResponderMove: (_, { dx }) => {
-        position.setValue(dx);
-      },
-      onPanResponderRelease: (evt, { dx }) => {
-        const { item } = evt._targetInst.memoizedProps;
-        if (dx < -100) {
-          handleDeleteClick(item?.id);
-          itemOutLeft.start();
-        } else if (dx > 100) {
-          handleEditClick({ ...item });
-          itemOutRight.start(() => goOrigin.start());
-        } else {
-          goOrigin.start();
-        }
-      },
-    })
-  ).current;
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      onPressIn.start();
+    },
+    onPanResponderMove: (_, { dx }) => {
+      position.setValue(dx);
+    },
+    onPanResponderRelease: (evt, { dx }) => {
+      const { item } = evt._targetInst.memoizedProps;
+      if (dx < -100) {
+        handleDeleteClick(item?.id);
+        itemOutLeft.start();
+      } else if (dx > 100) {
+        handleEditClick({ ...item });
+        itemOutRight.start(() => goOrigin.start());
+      } else {
+        goOrigin.start();
+      }
+    },
+  });
 
   // Animations end.
 
