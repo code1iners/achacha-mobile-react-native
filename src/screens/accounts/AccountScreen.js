@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { FlatList } from "react-native";
+import { FlatList, Text } from "react-native";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 import { useQuery } from "@apollo/client";
 import GET_ACCOUNTS_QUERY from "../../apollo/fetching/accounts/getAccounts.query";
 import LoadingView from "../../components/LoadingView";
 import AccountItem from "../../components/accounts/AccountItem";
+import { ThemeText } from "../../utils/styles/styleUtils";
 
 const Container = styled.View`
   flex: 1;
@@ -17,6 +18,8 @@ const AccountListContainer = styled(FlatList)`
   flex: 1;
   width: 100%;
 `;
+
+const EmptyAccountText = styled(ThemeText)``;
 
 const AccountScreen = ({ navigation }) => {
   const { data, loading, error } = useQuery(GET_ACCOUNTS_QUERY);
@@ -54,13 +57,15 @@ const AccountScreen = ({ navigation }) => {
     <Container>
       {loading ? (
         <LoadingView />
-      ) : (
+      ) : data?.accounts.length ? (
         <AccountListContainer
           data={data?.accounts}
           renderItem={renderItem}
           keyExtractor={(item) => item?.id + ""}
           showsVerticalScrollIndicator={false}
         />
+      ) : (
+        <EmptyAccountText>No accounts...</EmptyAccountText>
       )}
     </Container>
   );

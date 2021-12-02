@@ -10,7 +10,7 @@ import { useMutation } from "@apollo/client";
 import DELETE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/deleteAccount.mutation";
 import { useNavigation } from "@react-navigation/native";
 
-const Container = styled(FlexView)`
+const Container = styled(Animated.createAnimatedComponent(FlexView))`
   /* flex: 1; */
   align-items: center;
   margin: ${(props) =>
@@ -58,6 +58,7 @@ const AccountContainer = styled(Animated.createAnimatedComponent(FlexView))`
       props.isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
   border-radius: 10px;
   background-color: ${(props) => (props.isDark ? colors.black : colors.white)};
+  align-items: center;
 `;
 const AccountThumbnailWrapper = styled.View``;
 const AccountThumbnail = styled.Image`
@@ -119,6 +120,7 @@ const AccountItem = (params) => {
 
   const position = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
 
   // Animations start.
 
@@ -134,20 +136,10 @@ const AccountItem = (params) => {
     extrapolate: "clamp",
   });
 
-  const opacity = position.interpolate({
+  const backgroundOpacity = position.interpolate({
     inputRange: [-100, 0, 100],
     outputRange: [1, 0, 1],
     extrapolate: "clamp",
-  });
-
-  const onPressIn = Animated.spring(scale, {
-    toValue: 0.9,
-    useNativeDriver: false,
-  });
-
-  const onPressOut = Animated.spring(scale, {
-    toValue: 1,
-    useNativeDriver: false,
   });
 
   const itemOutRight = Animated.spring(position, {
@@ -166,13 +158,15 @@ const AccountItem = (params) => {
     tension: 1,
   });
 
-  const goOrigin = Animated.parallel([goCenter, onPressOut]);
+  const fadeOut = Animated.timing(opacity, {
+    toValue: 0,
+    duration: 500,
+    useNativeDriver: false,
+  });
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      onPressIn.start();
-    },
+    onPanResponderGrant: () => {},
     onPanResponderMove: (_, { dx }) => {
       position.setValue(dx);
     },
@@ -183,9 +177,9 @@ const AccountItem = (params) => {
         itemOutLeft.start();
       } else if (dx > 100) {
         handleEditClick({ ...item });
-        itemOutRight.start(() => goOrigin.start());
+        itemOutRight.start(() => goCenter.start());
       } else {
-        goOrigin.start();
+        goCenter.start();
       }
     },
   });
@@ -203,22 +197,26 @@ const AccountItem = (params) => {
       } = result;
 
       if (deleteAccount?.ok) {
-        Alert.alert("Succeed", "Successfully deleted the account item.", [
-          {
-            text: "OK",
-            style: "destructive",
-            onPress: () => {
-              const accountId = `Account:${id}`;
-              cache.modify({
-                fields: {
-                  accounts(previous) {
-                    return previous.filter((item) => item?.__ref !== accountId);
+        fadeOut.start(() => {
+          Alert.alert("Succeed", "Successfully deleted the account item.", [
+            {
+              text: "OK",
+              style: "destructive",
+              onPress: () => {
+                const accountId = `Account:${id}`;
+                cache.modify({
+                  fields: {
+                    accounts(previous) {
+                      return previous.filter(
+                        (item) => item?.__ref !== accountId
+                      );
+                    },
                   },
-                },
-              });
+                });
+              },
             },
-          },
-        ]);
+          ]);
+        });
       } else {
         Alert.alert("Failed", deleteAccount?.error);
       }
@@ -257,7 +255,7 @@ const AccountItem = (params) => {
         {
           text: "Cancel",
           style: "cancel",
-          onPress: () => goOrigin.start(),
+          onPress: () => goCenter.start(),
         },
       ]
     );
@@ -301,22 +299,33 @@ const AccountItem = (params) => {
   }, [params]);
 
   return (
-    <Container isFirstItem={isFirstItem}>
+    <Container
+      style={{
+        opacity,
+      }}
+      isFirstItem={isFirstItem}
+    >
       <Background
         style={{
           backgroundColor,
-          transform: [{ scale: scale.__getValue() - 0.125 }],
+          transform: [{ scale: scale.__getValue() - 0.03 }],
         }}
       />
 
       <DeleteAccountContainer
-        style={{ opacity, transform: [{ translateX: deleteAccountPosition }] }}
+        style={{
+          opacity: backgroundOpacity,
+          transform: [{ translateX: deleteAccountPosition }],
+        }}
       >
         <DeleteAccountText>Delete</DeleteAccountText>
       </DeleteAccountContainer>
 
       <UpdateAccountContainer
-        style={{ opacity, transform: [{ translateX: deleteAccountPosition }] }}
+        style={{
+          opacity: backgroundOpacity,
+          transform: [{ translateX: deleteAccountPosition }],
+        }}
       >
         <UpdateAccountText>Update</UpdateAccountText>
       </UpdateAccountContainer>
