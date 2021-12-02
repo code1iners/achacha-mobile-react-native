@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { Animated, PanResponder } from "react-native";
 import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../../utils/styles/styleUtils";
 import { colors, getIsDark } from "../../utils/themes/colors";
@@ -10,13 +11,17 @@ import DELETE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/deleteAccoun
 import { useNavigation } from "@react-navigation/native";
 
 const Container = styled(FlexView)`
+  width: 100%;
+  align-items: center;
+`;
+
+const AccountContainer = styled(Animated.createAnimatedComponent(FlexView))`
   margin: ${(props) =>
     props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
   padding: 10px;
   border-radius: 10px;
   background-color: ${(props) =>
     props.isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
-  align-items: center;
 `;
 const AccountThumbnailWrapper = styled.View``;
 const AccountThumbnail = styled.Image`
@@ -74,6 +79,62 @@ const AccountItem = ({
     useMutation(DELETE_ACCOUNT_MUTATION);
   const navigation = useNavigation();
 
+  const position = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  // Animations start.
+
+  const onPressIn = Animated.spring(scale, {
+    toValue: 0.9,
+    useNativeDriver: true,
+  });
+
+  const onPressOut = Animated.spring(scale, {
+    toValue: 1,
+    useNativeDriver: true,
+  });
+
+  const itemOutRight = Animated.spring(position, {
+    toValue: 400,
+    useNativeDriver: true,
+  });
+
+  const itemOutLeft = Animated.spring(position, {
+    toValue: -400,
+    useNativeDriver: true,
+  });
+
+  const goOrigin = Animated.spring(position, {
+    toValue: 0,
+    useNativeDriver: true,
+  });
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        onPressIn.start();
+      },
+      onPanResponderMove: (_, { dx }) => {
+        position.setValue(dx);
+      },
+      onPanResponderRelease: (evt, { dx }) => {
+        const { itemId } = evt._targetInst.memoizedProps;
+        if (dx < -200) {
+          deleteAccount(itemId);
+          itemOutLeft.start();
+        } else if (dx > 200) {
+          deleteAccount(itemId);
+          itemOutRight.start();
+        } else {
+          Animated.parallel([goOrigin, onPressOut]).start();
+        }
+      },
+    })
+  ).current;
+
+  // Animations end.
+
   // Methods.
   /**
    * ### Update account cache when finished delete item.
@@ -113,7 +174,7 @@ const AccountItem = ({
   /**
    * ### Run delete account mutation.
    */
-  const deleteAccount = () => {
+  const deleteAccount = (id) => {
     if (deleteAccountLoading) return;
 
     deleteAccountMutation({
@@ -134,7 +195,7 @@ const AccountItem = ({
         {
           text: "OK",
           style: "destructive",
-          onPress: deleteAccount,
+          onPress: () => deleteAccount(id),
         },
         {
           text: "Cancel",
@@ -164,44 +225,59 @@ const AccountItem = ({
   };
 
   return (
-    <Container isDark={isDark} isFirstItem={isFirstItem}>
-      <AccountThumbnailWrapper>
-        {thumbnail ? (
-          <AccountThumbnail
-            source={{
-              uri: thumbnail,
-            }}
-          />
-        ) : (
-          <Ionicons name="image-outline" size={50} />
-        )}
-      </AccountThumbnailWrapper>
-
-      <AccountInfoContainer>
-        <AccountInfoTopContainer>
-          <AccountTitleWrapper>
-            <AccountTitle>{title}</AccountTitle>
-            <AccountSubtitle>{subtitle}</AccountSubtitle>
-          </AccountTitleWrapper>
-
-          <AccountActionsContainer>
-            {/* Edit button */}
-            <ColoredCircle color={colors.yellow} onPress={handleEditClick} />
-            {/* Spacing */}
-            <View style={{ marginRight: 10 }} />
-            {/* Delete button */}
-            <ColoredCircle
-              color={colors.errorRed}
-              onPress={handleDeleteClick}
+    <Container>
+      <AccountContainer
+        {...panResponder.panHandlers}
+        isDark={isDark}
+        isFirstItem={isFirstItem}
+        style={{
+          transform: [
+            {
+              translateX: position,
+            },
+            { scale },
+          ],
+        }}
+        itemId={id}
+      >
+        <AccountThumbnailWrapper>
+          {thumbnail ? (
+            <AccountThumbnail
+              source={{
+                uri: thumbnail,
+              }}
             />
-          </AccountActionsContainer>
-        </AccountInfoTopContainer>
+          ) : (
+            <Ionicons name="image-outline" size={50} />
+          )}
+        </AccountThumbnailWrapper>
 
-        <AccountInfoWrapper>
-          <AccountName>{accountName}</AccountName>
-          <AccountPassword>{accountPassword}</AccountPassword>
-        </AccountInfoWrapper>
-      </AccountInfoContainer>
+        <AccountInfoContainer>
+          <AccountInfoTopContainer>
+            <AccountTitleWrapper>
+              <AccountTitle>{title}</AccountTitle>
+              <AccountSubtitle>{subtitle}</AccountSubtitle>
+            </AccountTitleWrapper>
+
+            <AccountActionsContainer>
+              {/* Edit button */}
+              <ColoredCircle color={colors.yellow} onPress={handleEditClick} />
+              {/* Spacing */}
+              <View style={{ marginRight: 10 }} />
+              {/* Delete button */}
+              <ColoredCircle
+                color={colors.errorRed}
+                onPress={handleDeleteClick}
+              />
+            </AccountActionsContainer>
+          </AccountInfoTopContainer>
+
+          <AccountInfoWrapper>
+            <AccountName>{accountName}</AccountName>
+            <AccountPassword>{accountPassword}</AccountPassword>
+          </AccountInfoWrapper>
+        </AccountInfoContainer>
+      </AccountContainer>
     </Container>
   );
 };

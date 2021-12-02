@@ -6,4 +6,8 @@ This is a very simple account management application powered by React native.
 
 - React navigation(Native, Bottom, Stack).
 - Graphql (Apollo client).
-- Typescript.
+- Javascript & Typescript.
+- Styled Component.
+- Expo libraries.
+- Async storage.
+- Animation.
