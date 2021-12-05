@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { useWindowDimensions, Image, FlatList } from "react-native";
+import {
+  useWindowDimensions,
+  Image,
+  FlatList,
+  Platform,
+  Linking,
+  Alert,
+} from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 
@@ -44,10 +51,20 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
   };
 
   const getPermissions = async () => {
-    if (enabled) {
-      const res = await MediaLibrary.getPermissionsAsync();
+    try {
+      if (enabled) {
+        const { accessPrivileges, canAskAgain, granted } =
+          await MediaLibrary.getPermissionsAsync();
+        console.log(granted, canAskAgain, accessPrivileges);
 
-      getPhotos();
+        if (granted) {
+          getPhotos();
+        } else {
+          Alert.alert("Permission required.");
+        }
+      }
+    } catch (error) {
+      console.error("getPermissions", error);
     }
   };
 

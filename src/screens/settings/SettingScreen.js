@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/native";
 import { FlatList } from "react-native";
-import { ThemeText } from "../../utils/styles/styleUtils";
-import { settingMenus } from "../../utils/settings/settingMenus";
 import SettingItem from "../../components/settings/SettingItem";
 import { userDelete, userSignOut } from "../../hooks/useAuth";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
+import { colors } from "../../utils/themes/colors";
 
 const DELETE_USER_MUTATION = gql`
   mutation deleteUser {
@@ -25,7 +24,7 @@ const ItemSeparator = styled.View`
   background-color: rgba(0, 0, 0, 0.2);
 `;
 
-const SettingScreen = () => {
+const SettingScreen = ({ navigation }) => {
   const renderItem = ({ item }) => <SettingItem {...item} />;
   const deleteUserMutation = useMutation(DELETE_USER_MUTATION);
 
@@ -41,20 +40,25 @@ const SettingScreen = () => {
           title: "Me",
           type: "component",
           componentName: "ProfileScreen",
+          color: colors.white,
         },
         {
           title: "Sign out",
           type: "function",
           function: () => userSignOut(),
+          color: colors.white,
         },
         {
           title: "Delete account",
           type: "function",
           function: () => userDelete(deleteUserMutation),
+          color: colors.errorRed,
         },
       ],
     },
   ];
+
+  // Watch.
 
   return (
     <Container>

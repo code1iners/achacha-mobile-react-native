@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/native";
 import { FlexView, ThemeText } from "../../utils/styles/styleUtils";
 import { SIGN_IN, SIGN_UP } from "../../utils/constants";
@@ -11,7 +11,7 @@ import states from "../../apollo/states";
 const Container = styled.View`
   flex: 1;
   padding: 20px 20px 0;
-  background-color: ${(props) => props.theme.colors.mainBackgroundColor};
+  background-color: ${(props) => props.theme?.colors?.mainBackgroundColor};
 `;
 
 // Header start.
@@ -28,8 +28,8 @@ const NavText = styled(ThemeText)`
   font-size: 18px;
   color: ${(props) =>
     props.isClicked
-      ? props.theme.colors.accentColor
-      : props.theme.colors.textColor};
+      ? props.theme?.colors?.accentColor
+      : props.theme?.colors?.textColor};
 `;
 const WelcomeTitle = styled(ThemeText)`
   font-size: 50px;

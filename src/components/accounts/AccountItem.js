@@ -6,15 +6,16 @@ import { colors, getIsDark } from "../../utils/themes/colors";
 import { Ionicons } from "@expo/vector-icons";
 import ColoredCircle from "../shared/ColoredCircle";
 import { Alert, View } from "react-native";
-import { useMutation } from "@apollo/client";
+import { useMutation, useReactiveVar } from "@apollo/client";
 import DELETE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/deleteAccount.mutation";
 import { useNavigation } from "@react-navigation/native";
+import states from "../../apollo/states";
 
 const Container = styled(Animated.createAnimatedComponent(FlexView))`
   /* flex: 1; */
   align-items: center;
   margin: ${(props) =>
-    props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
+    props.isFirstItem ? "30px 30px 30px 30px" : "0 30px 30px 30px"};
 `;
 
 const Background = styled(Animated.View)`
@@ -102,6 +103,10 @@ const AccountPassword = styled(ThemeText)`
 `;
 
 const AccountItem = (params) => {
+  const accountVerticalMovingVar = useReactiveVar(
+    states.accountVerticalMovingVar
+  );
+
   const [id, setId] = useState(params?.id);
   const [thumbnail, setThumbnail] = useState(params?.thumbnail);
   const [title, setTitle] = useState(params?.title);
@@ -168,6 +173,7 @@ const AccountItem = (params) => {
     onStartShouldSetPanResponder: () => true,
     onPanResponderGrant: () => {},
     onPanResponderMove: (_, { dx }) => {
+      states.accountHorizontalMovingVar(true);
       position.setValue(dx);
     },
     onPanResponderRelease: (evt, { dx }) => {
@@ -181,6 +187,7 @@ const AccountItem = (params) => {
       } else {
         goCenter.start();
       }
+      states.accountHorizontalMovingVar(false);
     },
   });
 
@@ -297,6 +304,10 @@ const AccountItem = (params) => {
     setAccountPassword(params?.accountPassword);
     setItemIndex(params?.itemIndex);
   }, [params]);
+
+  useEffect(() => {
+    goCenter.start();
+  }, [states.accountVerticalMovingVar()]);
 
   return (
     <Container

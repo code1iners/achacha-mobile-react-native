@@ -5,5 +5,5 @@ export const FlexView = styled.View`
 `;
 
 export const ThemeText = styled.Text`
-  color: ${(props) => props.theme.colors.textColor};
+  color: ${(props) => props.theme?.colors?.textColor};
 `;

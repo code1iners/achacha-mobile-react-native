@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/native";
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import GET_ACCOUNTS_QUERY from "../../apollo/fetching/accounts/getAccounts.query";
 import LoadingView from "../../components/LoadingView";
 import AccountItem from "../../components/accounts/AccountItem";
 import { ThemeText } from "../../utils/styles/styleUtils";
+import states from "../../apollo/states";
 
 const Container = styled.View`
   flex: 1;
@@ -23,6 +24,9 @@ const EmptyAccountText = styled(ThemeText)``;
 
 const AccountScreen = ({ navigation }) => {
   const { data, loading, error } = useQuery(GET_ACCOUNTS_QUERY);
+  const accountHorizontalMovingVar = useReactiveVar(
+    states.accountHorizontalMovingVar
+  );
 
   const headerRight = () =>
     loading ? null : (
@@ -32,7 +36,6 @@ const AccountScreen = ({ navigation }) => {
   const renderItem = ({ item, index }) => (
     <AccountItem {...item} itemIndex={index} />
   );
-
   // Handlers.
   const handleAddClick = () => {
     navigation.navigate("StackNavigators", {
@@ -63,6 +66,9 @@ const AccountScreen = ({ navigation }) => {
           renderItem={renderItem}
           keyExtractor={(item) => item?.id + ""}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={!states.accountHorizontalMovingVar()}
+          onScrollBeginDrag={() => states.accountVerticalMovingVar(true)}
+          onScrollEndDrag={() => states.accountVerticalMovingVar(false)}
         />
       ) : (
         <EmptyAccountText>No accounts...</EmptyAccountText>

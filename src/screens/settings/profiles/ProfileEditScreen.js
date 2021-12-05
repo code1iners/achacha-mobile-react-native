@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components/native";
-import { View, Text, Keyboard, Alert, ActivityIndicator } from "react-native";
+import { Keyboard, Alert } from "react-native";
 import InputWithLabel from "../../../components/InputWithLabel";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useForm } from "react-hook-form";
@@ -9,7 +9,6 @@ import HeaderRightTextButton from "../../../components/headers/HeaderRightTextBu
 import { gql, useMutation } from "@apollo/client";
 import UserAvatar from "../../../components/UserAvatar";
 import { ReactNativeFile } from "extract-files";
-import { colors } from "../../../utils/themes/colors";
 import LoadingView from "../../../components/LoadingView";
 
 const PROFILE_UPDATE_MUTATION = gql`

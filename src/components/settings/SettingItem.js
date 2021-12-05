@@ -19,6 +19,7 @@ const SettingItemWrapper = styled.TouchableOpacity`
 `;
 const SettingItemText = styled(ThemeText)`
   letter-spacing: 1.25px;
+  color: ${(props) => props?.color};
 `;
 
 const SettingItem = ({ label, contents }) => {
@@ -40,7 +41,9 @@ const SettingItem = ({ label, contents }) => {
                   : item.function()
               }
             >
-              <SettingItemText>{item.title}</SettingItemText>
+              <SettingItemText color={item?.color}>
+                {item.title}
+              </SettingItemText>
             </SettingItemWrapper>
           );
         }}

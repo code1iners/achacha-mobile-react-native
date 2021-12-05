@@ -6,7 +6,7 @@ const Container = styled.View`
   /* margin-right: 10px; */
 `;
 const ButtonText = styled.Text`
-  color: ${(props) => props.theme.colors.textColor};
+  color: ${(props) => props.theme?.colors?.textColor};
   letter-spacing: 1.5px;
   padding: 10px;
 `;

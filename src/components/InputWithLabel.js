@@ -15,18 +15,18 @@ const LabelText = styled(ThemeText)`
 
 const InputWrapper = styled(FlexView)`
   align-items: center;
-  border: 1px solid ${(props) => props.theme.colors.textColor};
-  background-color: ${(props) => props.theme.colors.mainBackgroundColor};
+  border: 1px solid ${(props) => props.theme?.colors?.textColor};
+  background-color: ${(props) => props.theme?.colors?.mainBackgroundColor};
   margin-bottom: 5px;
 `;
 const Input = styled.TextInput.attrs({
   placeholderTextColor: "grey",
 })`
   width: 100%;
-  border-radius: ${(props) => props.theme.round.s};
-  padding: 5px 10px;
+  border-radius: ${(props) => props.theme?.round?.s};
+  padding: 15px 20px;
   letter-spacing: 1.5px;
-  color: ${(props) => props.theme.colors.textColor};
+  color: ${(props) => props.theme?.colors?.textColor};
 `;
 
 const InputWithLabel = ({
@@ -42,6 +42,7 @@ const InputWithLabel = ({
   value,
   onSubmitEditing,
   editable = true,
+  autoCapitalize = "none",
 }) => {
   return (
     <InputContainer hasMarginBottom={hasMarginBottom}>
@@ -57,6 +58,7 @@ const InputWithLabel = ({
           onSubmitEditing={onSubmitEditing}
           secureTextEntry={secureTextEntry}
           editable={editable}
+          autoCapitalize={autoCapitalize}
         />
       </InputWrapper>
 
