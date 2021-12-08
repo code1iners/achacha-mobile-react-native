@@ -25,7 +25,9 @@ const BottomTabNavigators = () => {
 
         tabBarStyle: {
           backgroundColor: isDark ? colors.black : colors.white,
-          borderTopColor: "rgba(255, 255, 255, 0.2)",
+          borderTopColor: isDark
+            ? "rgba(255, 255, 255, 0.2)"
+            : "rgba(0, 0, 0, 0.2)",
         },
         tabBarActiveTintColor: isDark ? colors.white : colors.black,
         tabBarInactiveTintColor: "grey",

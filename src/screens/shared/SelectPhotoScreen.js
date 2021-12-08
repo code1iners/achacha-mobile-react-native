@@ -7,9 +7,11 @@ import {
   Platform,
   Linking,
   Alert,
+  PermissionsAndroid,
 } from "react-native";
-import * as MediaLibrary from "expo-media-library";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { requestPermission } from "../../hooks/usePermissions";
 
 const Container = styled.View`
   flex: 1;
@@ -50,18 +52,33 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
     setCursor(endCursor);
   };
 
+  const getAndroidPermission = async () => {
+    // if (isGranted === "granted") {
+    //   const result = await launchImageLibrary();
+    //   console.log(result);
+    // }
+  };
+
   const getPermissions = async () => {
     try {
       if (enabled) {
         const { accessPrivileges, canAskAgain, granted } =
           await MediaLibrary.getPermissionsAsync();
-        console.log(granted, canAskAgain, accessPrivileges);
 
         if (granted) {
           getPhotos();
+        } else if (canAskAgain) {
+          const res = await MediaLibrary.requestPermissionsAsync();
         } else {
-          Alert.alert("Permission required.");
+          Alert.alert("Permission required.", "Set permission manually.", [
+            {
+              text: "OK",
+              style: "destructive",
+              onPress: () => Linking.openSettings(),
+            },
+          ]);
         }
+        getPhotos();
       }
     } catch (error) {
       console.error("getPermissions", error);
@@ -85,7 +102,7 @@ const SelectPhotoScreen = ({ route: { params }, navigation }) => {
 
   // Watch.
   useEffect(() => {
-    getPermissions();
+    getAndroidPermission();
     navigation.setOptions({
       headerRight,
     });

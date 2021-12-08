@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import { FlatList } from "react-native";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
@@ -23,7 +23,8 @@ const AccountListContainer = styled(FlatList)`
 const EmptyAccountText = styled(ThemeText)``;
 
 const AccountScreen = ({ navigation }) => {
-  const { data, loading, error } = useQuery(GET_ACCOUNTS_QUERY);
+  const [refreshing, setRefreshing] = useState(false);
+  const { data, loading, error, refetch } = useQuery(GET_ACCOUNTS_QUERY);
   const accountHorizontalMovingVar = useReactiveVar(
     states.accountHorizontalMovingVar
   );
@@ -41,6 +42,15 @@ const AccountScreen = ({ navigation }) => {
     navigation.navigate("StackNavigators", {
       screen: "AccountCreateScreen",
     });
+  };
+
+  const onRefresh = async () => {
+    console.log("onRefresh");
+    setRefreshing(true);
+
+    await refetch();
+
+    setRefreshing(false);
   };
 
   // Watch.
@@ -69,6 +79,8 @@ const AccountScreen = ({ navigation }) => {
           scrollEnabled={!states.accountHorizontalMovingVar()}
           onScrollBeginDrag={() => states.accountVerticalMovingVar(true)}
           onScrollEndDrag={() => states.accountVerticalMovingVar(false)}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
         />
       ) : (
         <EmptyAccountText>No accounts...</EmptyAccountText>

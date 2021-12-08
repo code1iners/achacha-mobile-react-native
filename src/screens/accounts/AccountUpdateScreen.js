@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 import { useMutation } from "@apollo/client";
 import { createFile } from "../../utils/fileUtils";
-import { Alert } from "react-native";
+import { Alert, PermissionsAndroid } from "react-native";
 import LoadingView from "../../components/LoadingView";
 import UPDATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/updateAccount.mutation";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const Container = styled(KeyboardAwareScrollView)`
   flex: 1;
@@ -38,6 +39,7 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
   const [titleError, setTitleError] = useState();
   const [accountNameError, setAccountNameError] = useState();
   const [accountPasswordError, setAccountPasswordError] = useState();
+  const [thumbnailImage, setThumbnailImage] = useState();
 
   const { register, setValue, watch, handleSubmit } = useForm();
 
@@ -129,12 +131,13 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
       errorClear();
 
       let thumbnail;
-      if (params?.selectedPhoto) {
+      if (thumbnailImage) {
         thumbnail = createFile({
-          uri: params?.selectedPhoto,
+          uri: thumbnailImage,
           name: "account",
         });
       }
+
       await updateAccountMutation({
         variables: {
           id: params?.account.id,
@@ -171,14 +174,43 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
   };
 
   // Handlers.
-  const handleThumbnailClick = () => {
-    navigation.navigate("StackNavigators", {
-      screen: "SelectPhotoScreen",
-      params: {
-        from: "AccountUpdateScreen",
-        ...(params?.account && { account: params?.account }),
-      },
-    });
+  const handleThumbnailClick = async () => {
+    try {
+      const isAndroid = Platform.OS === "android";
+      const isIos = Platform.OS === "ios";
+
+      if (isAndroid) {
+        const isGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+        );
+
+        if (isGranted === "granted") {
+          const { assets = [] } = await launchImageLibrary();
+          const [asset] = assets;
+          setThumbnailImage(asset?.uri);
+        } else if (isGranted === "denied") {
+          Alert.alert("Need permission", "Set permission please.");
+        } else {
+          Alert.alert("Need permission", "Set permission manually.", [
+            {
+              text: "Go",
+              style: "destructive",
+              onPress: () => Linking.openSettings(),
+            },
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+          ]);
+        }
+      } else if (isIos) {
+        const { assets = [] } = await launchImageLibrary();
+        const [asset] = assets;
+        setThumbnailImage(asset?.uri);
+      }
+    } catch (error) {
+      console.error("[handleThumbnailClick]", error);
+    }
   };
 
   // Watch.
@@ -192,7 +224,7 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
     navigation.setOptions({
       headerRight,
     });
-  }, [params, updateAccountLoading]);
+  }, [thumbnailImage, updateAccountLoading]);
 
   useEffect(() => {
     register("title", {
@@ -215,9 +247,9 @@ const AccountUpdateScreen = ({ route: { params }, navigation }) => {
   return (
     <Container>
       <ThumbnailWrapper onPress={handleThumbnailClick}>
-        {params?.selectedPhoto ? (
+        {thumbnailImage ? (
           <ThumbnailImage
-            source={{ uri: params?.selectedPhoto }}
+            source={{ uri: thumbnailImage }}
             width={150}
             height={150}
           />

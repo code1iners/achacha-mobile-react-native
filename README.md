@@ -11,3 +11,4 @@ This is a very simple account management application powered by React native.
 - Expo libraries.
 - Async storage.
 - Animation.
+- App center (Code push).

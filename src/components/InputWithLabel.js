@@ -16,6 +16,7 @@ const LabelText = styled(ThemeText)`
 const InputWrapper = styled(FlexView)`
   align-items: center;
   border: 1px solid ${(props) => props.theme?.colors?.textColor};
+  border-radius: 5px;
   background-color: ${(props) => props.theme?.colors?.mainBackgroundColor};
   margin-bottom: 5px;
 `;
@@ -24,7 +25,7 @@ const Input = styled.TextInput.attrs({
 })`
   width: 100%;
   border-radius: ${(props) => props.theme?.round?.s};
-  padding: 15px 20px;
+  padding: ${Platform.OS === "android" ? "10px 15px" : "15px 20px"};
   letter-spacing: 1.5px;
   color: ${(props) => props.theme?.colors?.textColor};
 `;

@@ -179,6 +179,7 @@ const SignUpScreen = () => {
         returnKeyType="next"
         textContentType="emailAddress"
         onSubmitEditing={() => usernameRef.current?.focus()}
+        editable={!signUpLoading}
       />
 
       {/* Username */}
@@ -192,6 +193,7 @@ const SignUpScreen = () => {
         returnKeyType="next"
         textContentType="username"
         onSubmitEditing={() => firstNameRef.current?.focus()}
+        editable={!signUpLoading}
       />
 
       {/* First name */}
@@ -205,6 +207,7 @@ const SignUpScreen = () => {
         returnKeyType="next"
         textContentType="username"
         onSubmitEditing={() => lastNameRef.current?.focus()}
+        editable={!signUpLoading}
       />
 
       {/* Last name */}
@@ -218,6 +221,7 @@ const SignUpScreen = () => {
         returnKeyType="next"
         textContentType="username"
         onSubmitEditing={() => passwordRef.current?.focus()}
+        editable={!signUpLoading}
       />
 
       {/* Password */}
@@ -232,6 +236,7 @@ const SignUpScreen = () => {
         textContentType="password"
         secureTextEntry={true}
         onSubmitEditing={() => passwordConfirmRef.current?.focus()}
+        editable={!signUpLoading}
       />
 
       {/* Password confirm */}
@@ -246,9 +251,13 @@ const SignUpScreen = () => {
         textContentType="password"
         secureTextEntry={true}
         onSubmitEditing={handleSubmit(onValid, onInvalid)}
+        editable={!signUpLoading}
       />
 
-      <HorizontalButton onPress={handleSubmit(onValid, onInvalid)} />
+      <HorizontalButton
+        isLoading={signUpLoading}
+        onPress={handleSubmit(onValid, onInvalid)}
+      />
     </Container>
   );
 };

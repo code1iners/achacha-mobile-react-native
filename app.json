@@ -1,19 +1,23 @@
 {
   "expo": {
-    "name": "Achacha",
-    "slug": "Achacha",
-    "version": "1.0.0",
-    "plugins": [
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
-        }
-      ]
-    ],
-    "assetBundlePatterns": ["**/*"]
+    "name": "Achacha+",
+    "icon": "./assets/images/logo_copy.png",
+    "slug": "achacha-plus",
+    "version": "1.1.0",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.codeliner.achacha",
+      "buildNumber": "1.1.0"
+    },
+    "android": {
+      "package": "com.codeliner.achacha",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo_adaptive_icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    }
   },
   "name": "Achacha"
 }

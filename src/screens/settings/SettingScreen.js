@@ -5,7 +5,7 @@ import SettingItem from "../../components/settings/SettingItem";
 import { userDelete, userSignOut } from "../../hooks/useAuth";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { colors } from "../../utils/themes/colors";
+import { colors, getIsDark } from "../../utils/themes/colors";
 
 const DELETE_USER_MUTATION = gql`
   mutation deleteUser {
@@ -27,6 +27,7 @@ const ItemSeparator = styled.View`
 const SettingScreen = ({ navigation }) => {
   const renderItem = ({ item }) => <SettingItem {...item} />;
   const deleteUserMutation = useMutation(DELETE_USER_MUTATION);
+  const isDark = getIsDark();
 
   /**
    * ### Setting screen menus.
@@ -40,13 +41,13 @@ const SettingScreen = ({ navigation }) => {
           title: "Me",
           type: "component",
           componentName: "ProfileScreen",
-          color: colors.white,
+          color: isDark ? colors.white : colors.black,
         },
         {
           title: "Sign out",
           type: "function",
           function: () => userSignOut(),
-          color: colors.white,
+          color: isDark ? colors.white : colors.black,
         },
         {
           title: "Delete account",

@@ -67,10 +67,12 @@ const WelcomeScreen = () => {
           </NavButton>
         </NavContainer>
 
-        <WelcomeTitle>Welcome!</WelcomeTitle>
+        <WelcomeTitle>Welcome!!</WelcomeTitle>
       </Header>
 
-      <Body>{nav === SIGN_IN ? <SignInScreen /> : <SignUpScreen />}</Body>
+      <Body showsVerticalScrollIndicator={false}>
+        {nav === SIGN_IN ? <SignInScreen /> : <SignUpScreen />}
+      </Body>
     </Container>
   );
 };

@@ -13,8 +13,9 @@ import { darkTheme, lightTheme } from "./src/utils/themes/colors";
 import { round, spacing } from "./src/utils/themes/spacing";
 import { ApolloProvider } from "@apollo/client";
 import client from "./src/apollo/apollo";
+import CodePush from "react-native-code-push";
 
-export default function App() {
+const App = () => {
   const [ready, setReady] = useState(false);
   const isDark = useColorScheme() === "dark";
   const theme = {
@@ -71,11 +72,13 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
-      <NavigationContainer>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <NavigationContainer>
           <RootNavigator />
-        </ThemeProvider>
-      </NavigationContainer>
+        </NavigationContainer>
+      </ThemeProvider>
     </ApolloProvider>
   );
-}
+};
+
+export default CodePush(App);

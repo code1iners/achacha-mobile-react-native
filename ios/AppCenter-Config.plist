@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+   AppCenter-Config.plist
+   Achacha
+
+   Created by Ethan on 2021/12/08.
+   Copyright (c) 2021 ___ORGANIZATIONNAME___. All rights reserved.
+-->
+
+<plist version="1.0">
+<dict>
+    <key>AppSecret</key>
+    <string>8ccdfd18-bd4b-4c1c-832b-7de83a8b94ed</string>
+</dict>
+</plist>

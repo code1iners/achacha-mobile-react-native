@@ -1,18 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import InputWithLabel from "../../components/InputWithLabel";
 import HorizontalButton from "../../components/HorizontalButton";
 import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
-import { gql, useMutation, useReactiveVar } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import {
   ERROR_INCORRECT_PASSWORD,
   ERROR_USER_NOT_FOUND,
-  TOKEN,
 } from "../../utils/constants";
 import states from "../../apollo/states";
 import { userSignIn } from "../../hooks/useAuth";
+import LoadingView from "../../components/LoadingView";
 
 const SIGN_IN_MUTATION = gql`
   mutation signIn($email: String!, $password: String!) {
@@ -126,6 +125,7 @@ const SignInScreen = ({ params }) => {
         returnKeyType="next"
         textContentType="emailAddress"
         onSubmitEditing={() => passwordRef.current?.focus()}
+        editable={!signInLoading}
       />
       <InputWithLabel
         reference={passwordRef}
@@ -138,9 +138,13 @@ const SignInScreen = ({ params }) => {
         textContentType="password"
         secureTextEntry={true}
         onSubmitEditing={handleSubmit(onValid, onInvalid)}
+        editable={!signInLoading}
       />
 
-      <HorizontalButton onPress={handleSubmit(onValid, onInvalid)} />
+      <HorizontalButton
+        isLoading={signInLoading}
+        onPress={handleSubmit(onValid, onInvalid)}
+      />
     </Container>
   );
 };

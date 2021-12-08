@@ -15,7 +15,7 @@ const Container = styled(Animated.createAnimatedComponent(FlexView))`
   /* flex: 1; */
   align-items: center;
   margin: ${(props) =>
-    props.isFirstItem ? "30px 30px 30px 30px" : "0 30px 30px 30px"};
+    props.isFirstItem ? "20px 20px 20px 20px" : "0 20px 20px 20px"};
 `;
 
 const Background = styled(Animated.View)`
@@ -170,7 +170,7 @@ const AccountItem = (params) => {
   });
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
+    onStartShouldSetPanResponder: () => false,
     onPanResponderGrant: () => {},
     onPanResponderMove: (_, { dx }) => {
       states.accountHorizontalMovingVar(true);
@@ -307,7 +307,7 @@ const AccountItem = (params) => {
 
   useEffect(() => {
     goCenter.start();
-  }, [states.accountVerticalMovingVar()]);
+  }, [accountVerticalMovingVar]);
 
   return (
     <Container
