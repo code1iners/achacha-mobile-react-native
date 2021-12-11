@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CodePushDeploymentKey</key>
-	<string>UQDbB5n0cuY4vKxH0C_FOreqk6UfGOEAncj6Q</string>
+	<string>RSHVByx0ke7bPVxuvxK6kbozbt0axrsDtQPAM</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

@@ -7,7 +7,7 @@ import states from "./states";
 
 // Links.
 const uploadLink = createUploadLink({
-  uri: TEST_API_SERVER_URI,
+  uri: API_SERVER_URI,
 });
 
 const onErrorLink = onError(({ graphQLErrors, networkError }) => {

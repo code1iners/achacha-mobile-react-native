@@ -34,7 +34,7 @@ const useMe = () => {
   // Watch.
   useEffect(() => {
     if (data?.me === null) {
-      userSignOut();
+      userSignOut(false);
     }
   }, [data]);
 

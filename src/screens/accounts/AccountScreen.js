@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import { FlatList } from "react-native";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
-import { useQuery, useReactiveVar } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import GET_ACCOUNTS_QUERY from "../../apollo/fetching/accounts/getAccounts.query";
 import LoadingView from "../../components/LoadingView";
 import AccountItem from "../../components/accounts/AccountItem";
@@ -64,7 +64,7 @@ const AccountScreen = ({ navigation }) => {
     <Container>
       {loading ? (
         <LoadingView />
-      ) : data?.accounts.length ? (
+      ) : data?.accounts?.length ? (
         <AccountListContainer
           data={data?.accounts}
           renderItem={renderItem}
