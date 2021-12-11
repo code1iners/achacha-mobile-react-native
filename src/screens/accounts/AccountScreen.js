@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { FlatList } from "react-native";
+import { Alert, BackHandler, FlatList } from "react-native";
 import HeaderRightTextButton from "../../components/headers/HeaderRightTextButton";
 import { useQuery } from "@apollo/client";
 import GET_ACCOUNTS_QUERY from "../../apollo/fetching/accounts/getAccounts.query";
@@ -34,6 +34,24 @@ const AccountScreen = ({ navigation }) => {
   const renderItem = ({ item, index }) => (
     <AccountItem {...item} itemIndex={index} />
   );
+
+  // Methods.
+
+  const backAction = () => {
+    Alert.alert("Wait!", "Are you sure you want to exit app?", [
+      {
+        text: "YES",
+        onPress: () => BackHandler.exitApp(),
+      },
+      {
+        text: "CANCEL",
+        style: "cancel",
+        onPress: () => null,
+      },
+    ]);
+    return true;
+  };
+
   // Handlers.
   const handleAddClick = () => {
     navigation.navigate("StackNavigators", {
@@ -52,6 +70,17 @@ const AccountScreen = ({ navigation }) => {
     navigation.setOptions({
       headerRight,
     });
+
+    // Init back button handler.
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => {
+      backHandler.remove();
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+    };
   }, []);
 
   useEffect(() => {

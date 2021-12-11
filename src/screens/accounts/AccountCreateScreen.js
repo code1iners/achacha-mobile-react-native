@@ -9,10 +9,9 @@ import HeaderRightTextButton from "../../components/headers/HeaderRightTextButto
 import { useMutation } from "@apollo/client";
 import CREATE_ACCOUNT_MUTATION from "../../apollo/fetching/accounts/createAccount.mutation";
 import { createFile } from "../../utils/fileUtils";
-import { Alert, Linking, PermissionsAndroid, Platform } from "react-native";
+import { Alert } from "react-native";
 import { gql } from "@apollo/client";
 import LoadingView from "../../components/LoadingView";
-import { launchImageLibrary } from "react-native-image-picker";
 import useImage, { GRANTED } from "../../hooks/useImage";
 
 const Container = styled(KeyboardAwareScrollView)`
