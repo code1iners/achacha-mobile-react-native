@@ -67,7 +67,7 @@ const WelcomeScreen = () => {
           </NavButton>
         </NavContainer>
 
-        <WelcomeTitle>Welcome!!</WelcomeTitle>
+        <WelcomeTitle>Welcome!</WelcomeTitle>
       </Header>
 
       <Body showsVerticalScrollIndicator={false}>

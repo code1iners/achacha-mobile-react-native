@@ -24,10 +24,7 @@ const EmptyAccountText = styled(ThemeText)``;
 
 const AccountScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { data, loading, error, refetch } = useQuery(GET_ACCOUNTS_QUERY);
-  const accountHorizontalMovingVar = useReactiveVar(
-    states.accountHorizontalMovingVar
-  );
+  const { data, loading, refetch } = useQuery(GET_ACCOUNTS_QUERY);
 
   const headerRight = () =>
     loading ? null : (
@@ -45,11 +42,8 @@ const AccountScreen = ({ navigation }) => {
   };
 
   const onRefresh = async () => {
-    console.log("onRefresh");
     setRefreshing(true);
-
     await refetch();
-
     setRefreshing(false);
   };
 
@@ -76,7 +70,6 @@ const AccountScreen = ({ navigation }) => {
           renderItem={renderItem}
           keyExtractor={(item) => item?.id + ""}
           showsVerticalScrollIndicator={false}
-          scrollEnabled={!states.accountHorizontalMovingVar()}
           onScrollBeginDrag={() => states.accountVerticalMovingVar(true)}
           onScrollEndDrag={() => states.accountVerticalMovingVar(false)}
           onRefresh={onRefresh}

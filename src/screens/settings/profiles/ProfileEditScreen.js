@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components/native";
 import { Keyboard, Alert } from "react-native";
 import InputWithLabel from "../../../components/InputWithLabel";
@@ -10,6 +10,7 @@ import { gql, useMutation } from "@apollo/client";
 import UserAvatar from "../../../components/UserAvatar";
 import { ReactNativeFile } from "extract-files";
 import LoadingView from "../../../components/LoadingView";
+import useImage, { GRANTED, NEVER_ASK_AGAIN } from "../../../hooks/useImage";
 
 const PROFILE_UPDATE_MUTATION = gql`
   mutation updateProfile(
@@ -47,12 +48,16 @@ const Form = styled(KeyboardAwareScrollView)`
 `;
 
 const ProfileEditScreen = ({ route: { params }, navigation }) => {
+  const [selectedPhoto, setSelectedPhoto] = useState();
+
   const { register, setValue, watch, handleSubmit, getValues } = useForm();
   const [profileUpdateMutation, { loading: profileUpdateLoading }] =
     useMutation(PROFILE_UPDATE_MUTATION);
 
   const emailRef = useRef();
   const usernameRef = useRef();
+
+  const { checkPermission, selectImage, openSetting } = useImage();
 
   const headerRight = () =>
     profileUpdateLoading ? (
@@ -106,14 +111,15 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
   };
 
   // Handlers.
-  const handleSelectPhotoClick = () => {
-    navigation.navigate("StackNavigators", {
-      screen: "SelectPhotoScreen",
-      params: {
-        from: "ProfileEditScreen",
-        ...(params?.me && { me: params?.me }),
-      },
-    });
+
+  const handleSelectPhotoClick = async () => {
+    const isGranted = await checkPermission();
+    if (isGranted === GRANTED) {
+      const asset = await selectImage();
+      setSelectedPhoto(asset?.uri);
+    } else {
+      openSetting();
+    }
   };
 
   const handleSaveClick = async () => {
@@ -124,9 +130,9 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
       const username = getValues("username");
 
       let avatar;
-      if (params?.selectedPhoto) {
+      if (selectedPhoto) {
         avatar = new ReactNativeFile({
-          uri: params?.selectedPhoto,
+          uri: selectedPhoto,
           type: "image/jpeg",
           name: "profile",
         });
@@ -154,7 +160,7 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
     navigation.setOptions({
       headerRight,
     });
-  }, [params, profileUpdateLoading]);
+  }, [selectedPhoto, profileUpdateLoading]);
 
   useEffect(() => {
     register("email");
@@ -171,9 +177,7 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
     <Container onPress={Keyboard.dismiss}>
       <Form>
         <UserAvatar
-          avatar={
-            params?.selectedPhoto ? params?.selectedPhoto : params?.me.avatar
-          }
+          avatar={selectedPhoto ? selectedPhoto : params?.me.avatar}
         />
         <InputWithLabel
           reference={emailRef}

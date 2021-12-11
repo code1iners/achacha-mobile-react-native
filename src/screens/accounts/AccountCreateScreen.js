@@ -13,6 +13,7 @@ import { Alert, Linking, PermissionsAndroid, Platform } from "react-native";
 import { gql } from "@apollo/client";
 import LoadingView from "../../components/LoadingView";
 import { launchImageLibrary } from "react-native-image-picker";
+import useImage, { GRANTED } from "../../hooks/useImage";
 
 const Container = styled(KeyboardAwareScrollView)`
   flex: 1;
@@ -43,6 +44,8 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
   const [thumbnailImage, setThumbnailImage] = useState();
 
   const { register, setValue, watch, handleSubmit } = useForm();
+
+  const { checkPermission, selectImage, openSetting } = useImage();
 
   const titleRef = useRef();
   const subtitleRef = useRef();
@@ -173,37 +176,12 @@ const AccountCreateScreen = ({ route: { params }, navigation }) => {
   // Handlers.
   const handleThumbnailClick = async () => {
     try {
-      const isAndroid = Platform.OS === "android";
-      const isIos = Platform.OS === "ios";
-
-      if (isAndroid) {
-        const isGranted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-        );
-
-        if (isGranted === "granted") {
-          const { assets = [] } = await launchImageLibrary();
-          const [asset] = assets;
-          setThumbnailImage(asset?.uri);
-        } else if (isGranted === "denied") {
-          Alert.alert("Need permission", "Set permission please.");
-        } else {
-          Alert.alert("Need permission", "Set permission manually.", [
-            {
-              text: "Go",
-              style: "destructive",
-              onPress: () => Linking.openSettings(),
-            },
-            {
-              text: "Cancel",
-              style: "cancel",
-            },
-          ]);
-        }
-      } else if (isIos) {
-        const { assets = [] } = await launchImageLibrary();
-        const [asset] = assets;
+      const isGranted = await checkPermission();
+      if (isGranted === GRANTED) {
+        const asset = await selectImage();
         setThumbnailImage(asset?.uri);
+      } else {
+        openSetting();
       }
     } catch (error) {
       console.error("[handleThumbnailClick]", error);
