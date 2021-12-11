@@ -13,3 +13,4 @@ This is a very simple account management application powered by React native.
 - Animation.
 - App center (Code push).
 - React native image picker.
+- Back handler.
