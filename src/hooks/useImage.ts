@@ -42,10 +42,10 @@ const useImage = (): UseImageInterface => {
           );
 
         case "ios":
-          return null;
+          return GRANTED;
 
         default:
-          return null;
+          return GRANTED;
       }
     } catch (error) {
       console.error("[checkPermission]", error);

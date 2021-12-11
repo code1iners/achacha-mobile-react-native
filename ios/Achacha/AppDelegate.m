@@ -59,9 +59,9 @@ static void InitializeFlipper(UIApplication *application) {
  }
 
 // App center.
-[AppCenterReactNative register];
-[AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
-[AppCenterReactNativeCrashes registerWithAutomaticProcessing];
+//[AppCenterReactNative register];
+//[AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
+//[AppCenterReactNativeCrashes registerWithAutomaticProcessing];
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
