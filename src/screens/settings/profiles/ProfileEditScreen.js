@@ -10,7 +10,7 @@ import { gql, useMutation } from "@apollo/client";
 import UserAvatar from "../../../components/UserAvatar";
 import { ReactNativeFile } from "extract-files";
 import LoadingView from "../../../components/LoadingView";
-import useImage, { GRANTED, NEVER_ASK_AGAIN } from "../../../hooks/useImage";
+import useImage, { GRANTED, DENIED, NEVER_ASK_AGAIN } from "@ce1pers/use-image";
 
 const PROFILE_UPDATE_MUTATION = gql`
   mutation updateProfile(
@@ -57,6 +57,7 @@ const ProfileEditScreen = ({ route: { params }, navigation }) => {
   const emailRef = useRef();
   const usernameRef = useRef();
 
+  // const { checkPermission, selectImage, openSetting } = useImage();
   const { checkPermission, selectImage, openSetting } = useImage();
 
   const headerRight = () =>

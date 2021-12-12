@@ -8,6 +8,7 @@ import LoadingView from "../../components/LoadingView";
 import AccountItem from "../../components/accounts/AccountItem";
 import { ThemeText } from "../../utils/styles/styleUtils";
 import states from "../../apollo/states";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Container = styled.View`
   flex: 1;
@@ -70,18 +71,22 @@ const AccountScreen = ({ navigation }) => {
     navigation.setOptions({
       headerRight,
     });
-
-    // Init back button handler.
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => {
-      backHandler.remove();
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
-    };
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Init back button handler.
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => {
+        backHandler.remove();
+        BackHandler.removeEventListener("hardwareBackPress", backAction);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     navigation.setOptions({
